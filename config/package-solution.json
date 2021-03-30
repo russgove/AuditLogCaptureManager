@@ -1,0 +1,13 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "react-audit-log-capture-manager-2-client-side-solution",
+    "id": "a762c11a-aa3d-4013-b30b-cc4c0386f290",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "isDomainIsolated": true
+  },
+  "paths": {
+    "zippedPackage": "solution/react-audit-log-capture-manager-2.sppkg"
+  }
+}
