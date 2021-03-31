@@ -1,3 +1,6 @@
+import { AadHttpClient } from '@microsoft/sp-http';
+
 export interface IAuditLogCaptureManagerProps {
-  description: string;
+  aadHttpClient: AadHttpClient
+  managementApiUrl: string;
 }

@@ -1,22 +1,17 @@
+import { WebPartContext } from '@microsoft/sp-webpart-base';
+import { IViewField, ListView } from '@pnp/spfx-controls-react/lib/controls/listView'
 import * as React from 'react';
 import { useState } from 'react';
 
-import { WebPartContext } from '@microsoft/sp-webpart-base';
-import { ListView, IViewField } from '@pnp/spfx-controls-react/lib/controls/listView'
 export const ListItemsWebPartContext = React.createContext<WebPartContext>(null);
 export interface ICapturesProps {
     description: string;
 }
 export const Captures: React.FunctionComponent<ICapturesProps> = (props) => {
     const viewFields: IViewField[] = [
-
         {
-            name: 'Name',
-            linkPropertyName: 'Name',
-            sorting: true,
-            isResizable: true
+            name: 'Name', linkPropertyName: 'Name', sorting: true, isResizable: true
         }
-
     ];
 
     const [captures, setCaptures] = useState<Array<any>>();
