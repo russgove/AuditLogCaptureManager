@@ -3,12 +3,12 @@
     "solution": {
         "name": "react-audit-log-capture-manager-2-client-side-solution",
         "id": "a762c11a-aa3d-4013-b30b-cc4c0386f290",
-        "version": "1.0.0.0",
+        "version": "1.4.0.0",
         "includeClientSideAssets": true,
         "isDomainIsolated": true,
         "webApiPermissionRequests": [{
-            "resource": "AppRegULSLOGS",
-            "scope": "Api.Access"
+            "resource": "rgoveulslogs app registration for webpart access",
+            "scope": "user_impersonation"
         }]
     },
     "paths": {

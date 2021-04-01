@@ -20,15 +20,20 @@ export default class AuditLogCaptureManagerWebPart extends BaseClientSideWebPart
 
   private aadHttpClient: AadHttpClient;
   public onInit(): Promise<void> {
-    debugger;
+
     Log.info(LOG_SOURCE, 'Initialized TrondocsCommandsCommandSet');
     //sessionStorage.setItem("spfx-debug", ""); ////   REMOVE THIS
     return super.onInit().then(_ => {
-
+      if (!this.properties.managementApiUrl) {
+        return;
+      }
       return this.context.aadHttpClientFactory
         .getClient(this.properties.managementApiUrl)
         .then((client: AadHttpClient): void => {
           this.aadHttpClient = client;
+        })
+        .catch(err => {
+          alert(err);
         });
     });
   }
@@ -63,7 +68,7 @@ export default class AuditLogCaptureManagerWebPart extends BaseClientSideWebPart
             {
               groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField('description', {
+                PropertyPaneTextField('managementApiUrl', {
                   label: strings.DescriptionFieldLabel
                 })
               ]
