@@ -1,8 +1,9 @@
 import { AadHttpClient, HttpClientResponse } from '@microsoft/sp-http';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { IViewField, ListView } from '@pnp/spfx-controls-react/lib/controls/listView'
+import { getIconClassName } from '@uifabric/styling';
 import { Button } from 'office-ui-fabric-react/lib/Button';
-import { Icon } from 'office-ui-fabric-react/lib/icon';
+import { Icon } from 'office-ui-fabric-react/lib/Icon';
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -22,15 +23,13 @@ export const Captures: React.FunctionComponent<ICapturesProps> = (props) => {
         { name: 'captureToListId', minWidth: 136, maxWidth: 90, displayName: 'Capture To List Id', sorting: true, isResizable: true },
         { name: 'captureToSiteId', minWidth: 136, maxWidth: 90, displayName: 'Capture To Site Id', sorting: true, isResizable: true },
         {
-            name: 'ddadss', displayName: 'Actions', render: (item?: any, index?: number) => {
+            name: 'actions', displayName: 'Actions', render: (item?: any, index?: number) => {
                 return <div>
                     <i className="ms-Icon ms-font-xl ms-Icon--Table ms-fontColor-themePrimary"></i>
-                    <Icon iconName="Edit" style={{ color: "Red", width: "130px", height: "330px" }} onClick={(e) => {
-                        debugger;
-                    }}></Icon>
-                    <Button iconName="Edit" style={{ color: "Red", width: "130px", height: "330px" }} onClick={(e) => {
-                        debugger;
-                    }}>Edit</Button>
+                    <i className={getIconClassName('Edit')} onClick={(e) => {
+                        setMode("Edit");
+                    }}></i>
+
                 </div>
             }
         }
@@ -38,6 +37,7 @@ export const Captures: React.FunctionComponent<ICapturesProps> = (props) => {
     ];
     const [captures, setCaptures] = useState<Array<any>>();
     const [mode, setMode] = useState<string>("");
+    const [selectedItem, setSelectedItem] = useState<string>("");
     const fetchMyAPI = useCallback(async () => {
         const url = parentContext.managementApiUrl + "/api/ListSitesToCapture";
         let response = await fetchAZFunc(parentContext.aadHttpClient, url);
@@ -49,15 +49,7 @@ export const Captures: React.FunctionComponent<ICapturesProps> = (props) => {
         debugger;
         fetchMyAPI()
     }, [fetchMyAPI])
-    // React.useEffect(() => {      
-    //     async function fetchMyAPI() {
-    //         const url = parentContext.managementApiUrl + "/api/ListSitesToCapture"
-    //         return await fetchAZFunc(parentContext.aadHttpClient, url);
-    //       }
-    //    var results=   fetchMyAPI()
-    //     debugger;
-    //     setCaptures(results)
-    // }, []);// empty array only runs when component is mounted
+
     return (
         <div>
             Events being Captured
