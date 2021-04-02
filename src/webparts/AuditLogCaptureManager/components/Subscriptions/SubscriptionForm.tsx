@@ -2,6 +2,7 @@ import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { IViewField, ListView } from '@pnp/spfx-controls-react/lib/controls/listView';
 import { getIconClassName } from '@uifabric/styling';
 import { TextField, ITextFieldProps } from 'office-ui-fabric-react/lib/TextField';
+import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -11,6 +12,8 @@ import { CutomPropertyContext } from '../AuditLogCaptureManager';
 export const ListItemsWebPartContext = React.createContext<WebPartContext>(null);
 export interface ISubscriptionFormProps {
     subscription: Subscription;
+    cancel: (e: any) => void;
+    save: (subs: Subscription) => void;
 }
 export const SubscriptionForm: React.FunctionComponent<ISubscriptionFormProps> = (props) => {
     debugger;
@@ -37,7 +40,10 @@ export const SubscriptionForm: React.FunctionComponent<ISubscriptionFormProps> =
             <TextField label="Status" value={item["webhook.status"]} onChange={(e, newValue) => {
                 setItem((item) => ({ ...item, "webhook.status": newValue }));
             }}></TextField>
-
+            <div>
+                <PrimaryButton>Save</PrimaryButton>
+                <DefaultButton>Cancel</DefaultButton>
+            </div>
 
             {item.contentType}
         </div>

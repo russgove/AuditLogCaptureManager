@@ -61,10 +61,18 @@ export const Subscriptions: React.FunctionComponent<ISubscriptionsProps> = (prop
       Subscriptions {mode}
       <ListView items={items} viewFields={viewFields}></ListView>
 
-      <Panel type={PanelType.smallFixedFar} isOpen={mode === "Edit"} onDismiss={(e) => {
+      <Panel type={PanelType.smallFixedFar} headerText="Edit Subscription" isOpen={mode === "Edit"} onDismiss={(e) => {
         setMode("Display")
       }} >
-        <SubscriptionForm subscription={selectedItem}></SubscriptionForm>
+        <SubscriptionForm subscription={selectedItem}
+          cancel={(e) => {
+            setMode("Display")
+          }}
+          save={(subscription) => {
+            setMode("Display")
+          }}
+
+        ></SubscriptionForm>
       </Panel>
     </div>
   );
