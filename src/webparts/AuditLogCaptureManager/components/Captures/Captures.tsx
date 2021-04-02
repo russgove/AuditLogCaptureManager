@@ -1,14 +1,11 @@
-import { AadHttpClient, HttpClientResponse } from '@microsoft/sp-http';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
-import { IViewField, ListView } from '@pnp/spfx-controls-react/lib/controls/listView'
+import { IViewField, ListView } from '@pnp/spfx-controls-react/lib/controls/listView';
 import { getIconClassName } from '@uifabric/styling';
-import { Button } from 'office-ui-fabric-react/lib/Button';
-import { Icon } from 'office-ui-fabric-react/lib/Icon';
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
-import { fetchAZFunc } from '../../utilities/fetchApi'
-import { CutomPropertyContext } from '../AuditLogCaptureManager'
+import { fetchAZFunc } from '../../utilities/fetchApi';
+import { CutomPropertyContext } from '../AuditLogCaptureManager';
 
 export const ListItemsWebPartContext = React.createContext<WebPartContext>(null);
 export interface ICapturesProps {
@@ -41,13 +38,11 @@ export const Captures: React.FunctionComponent<ICapturesProps> = (props) => {
     const fetchMyAPI = useCallback(async () => {
         const url = parentContext.managementApiUrl + "/api/ListSitesToCapture";
         let response = await fetchAZFunc(parentContext.aadHttpClient, url);
-        debugger;
         setCaptures(response);
     }, [])
 
     useEffect(() => {
-        debugger;
-        fetchMyAPI()
+        fetchMyAPI();
     }, [fetchMyAPI])
 
     return (

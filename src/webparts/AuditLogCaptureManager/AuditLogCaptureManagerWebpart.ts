@@ -22,7 +22,7 @@ export default class AuditLogCaptureManagerWebPart extends BaseClientSideWebPart
   public onInit(): Promise<void> {
 
     Log.info(LOG_SOURCE, 'Initialized TrondocsCommandsCommandSet');
-    //sessionStorage.setItem("spfx-debug", ""); ////   REMOVE THIS
+
     return super.onInit().then(_ => {
       if (!this.properties.managementApiUrl) {
         return;

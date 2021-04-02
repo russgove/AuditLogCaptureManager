@@ -1,5 +1,5 @@
 import styles from './AuditLogCaptureManager.module.scss';
-import { Callbacks, ICallbacksProps } from "./Callbacks/Callbacks";
+import { Subscriptions, ISubscriptionsProps } from "./Subscriptions/Subscriptions";
 import { Captures, ICapturesProps } from './Captures/Captures';
 import { IAuditLogCaptureManagerProps } from './IAuditLogCaptureManagerProps';
 import { IAuditLogCaptureManagerState } from './IAuditLogCaptureManagerState';
@@ -13,7 +13,7 @@ export default class AuditLogCaptureManager extends React.Component<IAuditLogCap
 
   public constructor(props: IAuditLogCaptureManagerProps) {
     super(props);
-    this.state = { currentAction: "IIS" };
+    this.state = { currentAction: "Subscriptions" };
   }
   public render(): React.ReactElement<IAuditLogCaptureManagerProps> {
 
@@ -22,8 +22,8 @@ export default class AuditLogCaptureManager extends React.Component<IAuditLogCap
       case "Captures":
         content = <Captures description="SS"></Captures>;
         break;
-      case "Callbacks":
-        content = <Callbacks description="SS"></Callbacks>;
+      case "Subscriptions":
+        content = <Subscriptions description="SS"></Subscriptions>;
         break;
       default:
         content = <div>no action selected</div>;
@@ -45,9 +45,11 @@ export default class AuditLogCaptureManager extends React.Component<IAuditLogCap
                   }
                 },
                 'action2': {
-                  title: 'Callbacks',
+                  title: 'Subscriptions',
                   iconName: 'Add',
-                  onClick: () => { this.setState((current) => ({ ...current, currentAction: "Callbacks" })) }
+                  onClick: () => {
+                    this.setState((current) => ({ ...current, currentAction: "Subscriptions" }));
+                  }
 
                 }
               }
