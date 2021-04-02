@@ -41,8 +41,12 @@ export const SubscriptionForm: React.FunctionComponent<ISubscriptionFormProps> =
                 setItem((item) => ({ ...item, "webhook.status": newValue }));
             }}></TextField>
             <div>
-                <PrimaryButton>Save</PrimaryButton>
-                <DefaultButton>Cancel</DefaultButton>
+                <PrimaryButton onClick={(e) => {
+                    debugger; props.save(item);
+                }}>Save</PrimaryButton>
+                <DefaultButton onClick={(e) => {
+                    props.cancel(e);
+                }}>Cancel</DefaultButton>
             </div>
 
             {item.contentType}

@@ -16,8 +16,25 @@ export interface ISubscriptionsProps {
   description: string;
 }
 export const Subscriptions: React.FunctionComponent<ISubscriptionsProps> = (props) => {
-  debugger;
-  const parentContext: any = React.useContext<any>(CutomPropertyContext)
+
+  const parentContext: any = React.useContext<any>(CutomPropertyContext);
+  const [items, setItems] = useState<Array<Subscription>>();
+  const [mode, setMode] = useState<string>("display");
+  // useEffect(() => {
+  //   setMode(mode);
+  // }, [mode]);
+  const [selectedItem, setSelectedItem] = useState<Subscription>(null);
+  const fetchMyAPI = useCallback(async () => {
+    const url = parentContext.managementApiUrl + "/api/ListSubscriptions";
+    let response = await fetchAZFunc(parentContext.aadHttpClient, url, "GET");
+
+    setItems(response);
+  }, []);
+
+  useEffect(() => {
+
+    fetchMyAPI();
+  }, [fetchMyAPI]);
   const viewFields: IViewField[] = [
     { name: 'contentType', minWidth: 250, maxWidth: 90, displayName: 'Content Type', sorting: true, isResizable: true },
     { name: 'status', minWidth: 136, maxWidth: 90, displayName: 'Status', sorting: true, isResizable: true },
@@ -29,32 +46,16 @@ export const Subscriptions: React.FunctionComponent<ISubscriptionsProps> = (prop
       name: 'actions', displayName: 'Actions', render: (item?: any, index?: number) => {
         return <div>
           <i className={getIconClassName('Edit')} onClick={(e) => {
-            debugger;
+
             setMode("Edit");
             setSelectedItem(item);
           }}></i>
-        </div>
+        </div>;
       }
     }
 
   ];
-  const [items, setItems] = useState<Array<Subscription>>();
-  const [mode, setMode] = useState<string>("display");
-  // useEffect(() => {
-  //   setMode(mode);
-  // }, [mode]);
-  const [selectedItem, setSelectedItem] = useState<Subscription>(null);
-  const fetchMyAPI = useCallback(async () => {
-    const url = parentContext.managementApiUrl + "/api/ListSubscriptions";
-    let response = await fetchAZFunc(parentContext.aadHttpClient, url);
-    debugger;
-    setItems(response);
-  }, []);
 
-  useEffect(() => {
-    debugger;
-    fetchMyAPI()
-  }, [fetchMyAPI])
 
   return (
     <div>
@@ -62,14 +63,18 @@ export const Subscriptions: React.FunctionComponent<ISubscriptionsProps> = (prop
       <ListView items={items} viewFields={viewFields}></ListView>
 
       <Panel type={PanelType.smallFixedFar} headerText="Edit Subscription" isOpen={mode === "Edit"} onDismiss={(e) => {
-        setMode("Display")
+        setMode("Display");
       }} >
         <SubscriptionForm subscription={selectedItem}
           cancel={(e) => {
-            setMode("Display")
+            setMode("Display");
           }}
-          save={(subscription) => {
-            setMode("Display")
+          save={async (subscription: Subscription) => {
+            debugger;
+            console.log(subscription.contentType);
+            const url = `${parentContext.managementApiUrl}/api/StartsUBSCRIPTION?ContentType=${subscription.contentType}&address=${subscription.webhook.address}&authId=${subscription.webhook.authId}&expiration=${subscription.webhook.expriration}`;
+            let response = await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(subscription));
+            setMode("Display");
           }}
 
         ></SubscriptionForm>

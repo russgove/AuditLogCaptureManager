@@ -12,8 +12,10 @@ export interface ICapturesProps {
     description: string;
 }
 export const Captures: React.FunctionComponent<ICapturesProps> = (props) => {
-    const parentContext: any = React.useContext<any>(CutomPropertyContext)
-    const viewFields: IViewField[] = [
+    const parentContext: any = React.useContext<any>(CutomPropertyContext);
+    const [captures, setCaptures] = useState<Array<any>>();
+    const [mode, setMode] = useState<string>("");
+    const [selectedItem, setSelectedItem] = useState<string>(""); const viewFields: IViewField[] = [
         { name: 'siteUrl', minWidth: 250, maxWidth: 90, displayName: 'Site Url', sorting: true, isResizable: true },
         { name: 'siteId', minWidth: 136, maxWidth: 90, displayName: 'Site Id', sorting: true, isResizable: true },
         { name: 'eventsToCapture', minWidth: 200, maxWidth: 90, displayName: 'Events to Capture', sorting: true, isResizable: true },
@@ -27,23 +29,20 @@ export const Captures: React.FunctionComponent<ICapturesProps> = (props) => {
                         setMode("Edit");
                     }}></i>
 
-                </div>
+                </div>;
             }
         }
 
     ];
-    const [captures, setCaptures] = useState<Array<any>>();
-    const [mode, setMode] = useState<string>("");
-    const [selectedItem, setSelectedItem] = useState<string>("");
+
     const fetchMyAPI = useCallback(async () => {
         const url = parentContext.managementApiUrl + "/api/ListSitesToCapture";
-        let response = await fetchAZFunc(parentContext.aadHttpClient, url);
+        let response = await fetchAZFunc(parentContext.aadHttpClient, url, "GET");
         setCaptures(response);
-    }, [])
-
+    }, []);
     useEffect(() => {
         fetchMyAPI();
-    }, [fetchMyAPI])
+    }, [fetchMyAPI]);
 
     return (
         <div>
