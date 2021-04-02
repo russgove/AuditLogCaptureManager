@@ -38,8 +38,9 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
                     const url = `${parentContext.managementApiUrl}/api/GetSPSiteByName/${siteName}`;
                     var response: Site = await fetchAZFunc(parentContext.aadHttpClient, url, "GET");
                     debugger;
-                    setItem((temp) => ({ ...temp, siteUrl: response.webUrl, siteId: response.id.split(',')[1] }));
-
+                    if (response) {
+                        setItem((temp) => ({ ...temp, siteUrl: response.webUrl, siteId: response.id.split(',')[1] }));
+                    }
 
                 }}
 
@@ -63,7 +64,7 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
 
             {errorMessage}
             <div>
-                <PrimaryButton onClick={async (e) => {
+                <PrimaryButton disabled={!item.siteId || !item.siteUrl || !item.eventsToCapture || !item.captureToListId || !item.captureToSiteId} onClick={async (e) => {
                     debugger;
                     const resp = await save(item);
                     if (resp.error) {
