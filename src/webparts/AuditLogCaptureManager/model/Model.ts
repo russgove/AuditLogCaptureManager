@@ -6,6 +6,15 @@ export class Subscription {
 export class Webhook {
     public address: string;
     public authId: string;
-    public expriration: string;
+    public expiration: string;
     public status: string;
 }
+export class SiteToCapture {
+
+    public siteUrl: string;
+    public siteId: string;
+    public eventsToCapture: string;
+    public captureToSiteId: string;
+    public captureToListId: string;
+}
+

@@ -6,50 +6,48 @@ import { ITextFieldProps, TextField } from 'office-ui-fabric-react/lib/TextField
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
-import { Subscription } from '../../model/Model';
+import { SiteToCapture } from '../../model/Model';
 import { fetchAZFunc } from '../../utilities/fetchApi';
 import { CutomPropertyContext } from '../AuditLogCaptureManager';
 
 export const ListItemsWebPartContext = React.createContext<WebPartContext>(null);
-export interface ISubscriptionFormProps {
-    subscription: Subscription;
+export interface ICaptureFormProps {
+    siteToCapture: SiteToCapture;
     cancel: (e: any) => void;
 }
-export const SubscriptionForm: React.FunctionComponent<ISubscriptionFormProps> = (props) => {
-    debugger;
+export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) => {
+
     const parentContext: any = React.useContext<any>(CutomPropertyContext);
-    const save = async function (subscription: Subscription) {
+    const save = async (siteToCapture: SiteToCapture) => {
         debugger;
-        console.log(subscription.contentType);
-        const url = `${parentContext.managementApiUrl}/api/StartsUBSCRIPTION?ContentType=${subscription.contentType}&address=${subscription["webhook.address"]}&authId=${subscription["webhook.authId"]}&expiration=${subscription["webhook.expiration"]}`;
-        let response = await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(subscription));
-        return response
-    }
-    const [item, setItem] = useState<Subscription>(props.subscription);
+
+        const url = `${parentContext.managementApiUrl}/api/AddSiteToCapture?siteUrl=${siteToCapture.siteUrl}&siteId=${siteToCapture.siteId}&eventsToCapture=${siteToCapture.eventsToCapture}&captureToListId=${siteToCapture.captureToListId}&captureToSiteId=${siteToCapture.captureToSiteId}`;
+        let response = await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(siteToCapture));
+        return response;
+    };
+    const [item, setItem] = useState<SiteToCapture>(props.siteToCapture);
     const [errorMessage, setErrorMessage] = useState<string>("");
 
 
     return (
         <div>
 
-            <TextField label="Content Type" value={item.contentType} onChange={(e, newValue) => {
-                setItem((temp) => ({ ...temp, contentType: newValue }));
+            <TextField label="Site Url" value={item.siteUrl} onChange={(e, newValue) => {
+                setItem((temp) => ({ ...temp, siteUrl: newValue }));
             }}></TextField>
-            <TextField label="Status" value={item.status} onChange={(e, newValue) => {
-                setItem((temp) => ({ ...temp, status: newValue }));
+            <TextField label="Site ID" value={item.siteId} onChange={(e, newValue) => {
+                setItem((temp) => ({ ...temp, siteId: newValue }));
             }}></TextField>
-            <TextField label="Address" value={item["webhook.address"]} onChange={(e, newValue) => {
-                setItem((temp) => ({ ...temp, "webhook.address": newValue }));
+            <TextField label="Events To Capture" value={item.eventsToCapture} onChange={(e, newValue) => {
+                setItem((temp) => ({ ...temp, eventsToCapture: newValue }));
             }}></TextField>
-            <TextField label="AuthId" value={item["webhook.authId"]} onChange={(e, newValue) => {
-                setItem((temp) => ({ ...temp, "webhook.authId": newValue }));
+            <TextField label="Capture To List Id" value={item.captureToListId} onChange={(e, newValue) => {
+                setItem((temp) => ({ ...temp, captureToListId: newValue }));
             }}></TextField>
-            <TextField label="Expiration" value={item["webhook.expiration"]} onChange={(e, newValue) => {
-                setItem((temp) => ({ ...temp, "webhook.expiration": newValue }));
+            <TextField label="Capture To Site Id" value={item.captureToSiteId} onChange={(e, newValue) => {
+                setItem((temp) => ({ ...temp, captureToSiteId: newValue }));
             }}></TextField>
-            <TextField label="Status" value={item["webhook.status"]} onChange={(e, newValue) => {
-                setItem((temp) => ({ ...temp, "webhook.status": newValue }));
-            }}></TextField>
+
             {errorMessage}
             <div>
                 <PrimaryButton onClick={async (e) => {

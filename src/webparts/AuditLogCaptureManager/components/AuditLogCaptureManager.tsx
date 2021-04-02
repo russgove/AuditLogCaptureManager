@@ -13,17 +13,17 @@ export default class AuditLogCaptureManager extends React.Component<IAuditLogCap
 
   public constructor(props: IAuditLogCaptureManagerProps) {
     super(props);
-    this.state = { currentAction: "Subscriptions" };
+    this.state = { currentAction: "Captures" };
   }
   public render(): React.ReactElement<IAuditLogCaptureManagerProps> {
 
     var content;
     switch (this.state.currentAction) {
       case "Captures":
-        content = <Captures description="SS"></Captures>;
+        content = <Captures></Captures>;
         break;
       case "Subscriptions":
-        content = <Subscriptions description="SS"></Subscriptions>;
+        content = <Subscriptions></Subscriptions>;
         break;
       default:
         content = <div>no action selected</div>;

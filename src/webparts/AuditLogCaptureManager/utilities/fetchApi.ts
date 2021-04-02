@@ -13,12 +13,19 @@ export function fetchAZFunc(client: AadHttpClient, url: string, method: string, 
         .then(async (response: HttpClientResponse) => {
             debugger;
             //  setCaptures(response)
-            return response.json().then((results) => {
-                debugger;
-                return results
-            });
+            if (response.ok) {
+                return response.json().then((results) => {
+                    debugger;
+                    return results
+                });
+            }
+            else {
+                throw (response.statusText);
+            }
 
-        }).catch((err) => {
+
+        })
+        .catch((err) => {
             alert(err);
             console.log(err);
             return null;
