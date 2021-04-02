@@ -37,7 +37,7 @@ export const Captures: React.FunctionComponent<ICapturesProps> = (props) => {
                         setMode("Edit");
                         setSelectedItem(item);
                     }}></i>
-
+                    {" "}
 
                     <i className={getIconClassName('Delete')} onClick={async (e) => {
                         if (confirm("Are You Sure you wanna?")) {
