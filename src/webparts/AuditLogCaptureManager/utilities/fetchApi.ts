@@ -16,7 +16,7 @@ export function fetchAZFunc(client: AadHttpClient, url: string, method: string, 
             if (response.ok) {
                 return response.json().then((results) => {
                     debugger;
-                    return results
+                    return results;
                 });
             }
             else {

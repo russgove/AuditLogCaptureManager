@@ -18,13 +18,13 @@ export interface ISubscriptionFormProps {
 export const SubscriptionForm: React.FunctionComponent<ISubscriptionFormProps> = (props) => {
     debugger;
     const parentContext: any = React.useContext<any>(CutomPropertyContext);
-    const save = async function (subscription: Subscription) {
+    const save = async (subscription: Subscription) => {
         debugger;
         console.log(subscription.contentType);
         const url = `${parentContext.managementApiUrl}/api/StartsUBSCRIPTION?ContentType=${subscription.contentType}&address=${subscription["webhook.address"]}&authId=${subscription["webhook.authId"]}&expiration=${subscription["webhook.expiration"]}`;
         let response = await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(subscription));
-        return response
-    }
+        return response;
+    };
     const [item, setItem] = useState<Subscription>(props.subscription);
     const [errorMessage, setErrorMessage] = useState<string>("");
 

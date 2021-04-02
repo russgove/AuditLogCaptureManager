@@ -1,6 +1,7 @@
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { IViewField, ListView } from '@pnp/spfx-controls-react/lib/controls/listView';
 import { getIconClassName } from '@uifabric/styling';
+import { Site } from 'microsoft-graph';
 import { DefaultButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { ITextFieldProps, TextField } from 'office-ui-fabric-react/lib/TextField';
 import * as React from 'react';
@@ -16,22 +17,34 @@ export interface ICaptureFormProps {
     cancel: (e: any) => void;
 }
 export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) => {
-
     const parentContext: any = React.useContext<any>(CutomPropertyContext);
     const save = async (siteToCapture: SiteToCapture) => {
         debugger;
-
         const url = `${parentContext.managementApiUrl}/api/AddSiteToCapture?siteUrl=${siteToCapture.siteUrl}&siteId=${siteToCapture.siteId}&eventsToCapture=${siteToCapture.eventsToCapture}&captureToListId=${siteToCapture.captureToListId}&captureToSiteId=${siteToCapture.captureToSiteId}`;
-        let response = await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(siteToCapture));
+        var response = await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(siteToCapture));
         return response;
     };
     const [item, setItem] = useState<SiteToCapture>(props.siteToCapture);
+    const [siteName, setSiteName] = useState<string>(item.siteUrl ? new URL(decodeURIComponent(item.siteUrl)).pathname.split[2] : "");
     const [errorMessage, setErrorMessage] = useState<string>("");
-
-
     return (
         <div>
+            <TextField label="Site Name" value={siteName}
+                onChange={(e, newValue) => {
+                    setSiteName(newValue);
+                }}
+                onBlur={async () => {
+                    setItem((temp) => ({ ...temp, siteUrl: "" }));
+                    const url = `${parentContext.managementApiUrl}/api/GetSPSiteByName/${siteName}`;
+                    var response: Site = await fetchAZFunc(parentContext.aadHttpClient, url, "GET");
+                    debugger;
+                    setItem((temp) => ({ ...temp, siteUrl: response.webUrl, siteId: response.id.split(',')[1] }));
 
+
+                }}
+
+
+            ></TextField>
             <TextField label="Site Url" value={item.siteUrl} onChange={(e, newValue) => {
                 setItem((temp) => ({ ...temp, siteUrl: newValue }));
             }}></TextField>
@@ -66,16 +79,7 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
                     props.cancel(e);
                 }}>Cancel</DefaultButton>
             </div>
-            This operation starts a subscription to the specified content type. If a subscription to the specified content type already exists, this operation is used to:
 
-Update the properties of an active webhook.
-
-Enable a webhook that was disabled because of excessive failed notifications.
-
-Re-enable an expired webhook by specifying a later or null expiration date.
-
-Remove a webhook.
-See https://docs.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-reference
         </div>
     );
 };

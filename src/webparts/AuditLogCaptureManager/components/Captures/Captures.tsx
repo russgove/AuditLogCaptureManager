@@ -1,14 +1,16 @@
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { IViewField, ListView } from '@pnp/spfx-controls-react/lib/controls/listView';
 import { getIconClassName } from '@uifabric/styling';
+import { DefaultButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
+import { IPanelProps, Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
-import { IPanelProps, Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
-import { DefaultButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
+
+import { SiteToCapture } from '../../model/Model';
 import { fetchAZFunc } from '../../utilities/fetchApi';
 import { CutomPropertyContext } from '../AuditLogCaptureManager';
 import { CaptureForm, ICaptureFormProps } from './CaptureForm';
-import { SiteToCapture } from '../../model/Model';
+
 export const ListItemsWebPartContext = React.createContext<WebPartContext>(null);
 export interface ICapturesProps {
 
@@ -35,6 +37,8 @@ export const Captures: React.FunctionComponent<ICapturesProps> = (props) => {
                         setMode("Edit");
                         setSelectedItem(item);
                     }}></i>
+                    &nbsp&nbsp
+
                     <i className={getIconClassName('Delete')} onClick={async (e) => {
                         if (confirm("Are You Sure you wanna?")) {
                             const url = `${parentContext.managementApiUrl}/api/DeleteSiteToCapture?siteId=${item.siteId}`;
@@ -48,7 +52,10 @@ export const Captures: React.FunctionComponent<ICapturesProps> = (props) => {
                 </div>;
             }
         },
-        { name: 'siteUrl', minWidth: 250, maxWidth: 90, displayName: 'Site Url', sorting: true, isResizable: true },
+        {
+            name: 'siteUrl', minWidth: 250, maxWidth: 90, displayName: 'Site Url', sorting: true, isResizable: true, render: (item?: any, index?: number) => {
+                return decodeURIComponent(item.siteUrl);
+            },
         { name: 'siteId', minWidth: 136, maxWidth: 90, displayName: 'Site Id', sorting: true, isResizable: true },
         { name: 'eventsToCapture', minWidth: 200, maxWidth: 90, displayName: 'Events to Capture', sorting: true, isResizable: true },
         { name: 'captureToListId', minWidth: 136, maxWidth: 90, displayName: 'Capture To List Id', sorting: true, isResizable: true },
@@ -61,7 +68,12 @@ export const Captures: React.FunctionComponent<ICapturesProps> = (props) => {
     return (
         <div>
             Events being Captured
-            
+            <br />
+            <PrimaryButton onClick={async (e) => {
+                setMode("Edit");
+                setSelectedItem(new SiteToCapture());
+
+            }}>Add Site</PrimaryButton>
             <ListView items={captures} viewFields={viewFields}></ListView>
 
             <Panel type={PanelType.smallFixedFar} headerText="Edit Subscription" isOpen={mode === "Edit"} onDismiss={(e) => {
@@ -74,6 +86,13 @@ export const Captures: React.FunctionComponent<ICapturesProps> = (props) => {
                     }}
                 ></CaptureForm>
             </Panel>
+
+            <PrimaryButton onClick={async (e) => {
+                setMode("Edit");
+                setSelectedItem(new SiteToCapture());
+
+            }}>Add Site</PrimaryButton>
+
         </div>
 
     );
