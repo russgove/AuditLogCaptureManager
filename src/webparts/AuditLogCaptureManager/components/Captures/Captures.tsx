@@ -37,7 +37,7 @@ export const Captures: React.FunctionComponent<ICapturesProps> = (props) => {
                         setMode("Edit");
                         setSelectedItem(item);
                     }}></i>
-                    &nbsp&nbsp
+
 
                     <i className={getIconClassName('Delete')} onClick={async (e) => {
                         if (confirm("Are You Sure you wanna?")) {
@@ -55,7 +55,8 @@ export const Captures: React.FunctionComponent<ICapturesProps> = (props) => {
         {
             name: 'siteUrl', minWidth: 250, maxWidth: 90, displayName: 'Site Url', sorting: true, isResizable: true, render: (item?: any, index?: number) => {
                 return decodeURIComponent(item.siteUrl);
-            },
+            }
+        },
         { name: 'siteId', minWidth: 136, maxWidth: 90, displayName: 'Site Id', sorting: true, isResizable: true },
         { name: 'eventsToCapture', minWidth: 200, maxWidth: 90, displayName: 'Events to Capture', sorting: true, isResizable: true },
         { name: 'captureToListId', minWidth: 136, maxWidth: 90, displayName: 'Capture To List Id', sorting: true, isResizable: true },
