@@ -1,15 +1,15 @@
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { IViewField, ListView } from '@pnp/spfx-controls-react/lib/controls/listView';
 import { getIconClassName } from '@uifabric/styling';
-import { DefaultButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
-import { IPanelProps, Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
+import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
+import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { SiteToCapture } from '../../model/Model';
 import { fetchAZFunc } from '../../utilities/fetchApi';
 import { CutomPropertyContext } from '../AuditLogCaptureManager';
-import { CaptureForm, ICaptureFormProps } from './CaptureForm';
+import { CaptureForm } from './CaptureForm';
 
 export const ListItemsWebPartContext = React.createContext<WebPartContext>(null);
 export interface ICapturesProps {
@@ -43,7 +43,7 @@ export const Captures: React.FunctionComponent<ICapturesProps> = (props) => {
                         if (confirm("Are You Sure you wanna?")) {
                             const url = `${parentContext.managementApiUrl}/api/DeleteSiteToCapture?siteId=${item.siteId}`;
                             let response = await fetchAZFunc(parentContext.aadHttpClient, url, "Get");
-                            debugger;
+
                             fetchMyAPI();
                         }
 
@@ -77,7 +77,7 @@ export const Captures: React.FunctionComponent<ICapturesProps> = (props) => {
             }}>Add Site</PrimaryButton>
             <ListView items={captures} viewFields={viewFields}></ListView>
 
-            <Panel type={PanelType.largeFixed} headerText="Edit Subscription" isOpen={mode === "Edit"} onDismiss={(e) => {
+            <Panel type={PanelType.largeFixed} headerText="Configur Site to Capture" isOpen={mode === "Edit"} onDismiss={(e) => {
                 setMode("Display");
             }} >
                 <CaptureForm siteToCapture={selectedItem}

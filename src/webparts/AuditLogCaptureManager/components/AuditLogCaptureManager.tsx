@@ -1,11 +1,13 @@
+
+import { Toolbar } from '@pnp/spfx-controls-react/lib/controls/toolbar';
+import * as React from 'react';
+
 import styles from './AuditLogCaptureManager.module.scss';
-import { Subscriptions, ISubscriptionsProps } from "./Subscriptions/Subscriptions";
-import { Captures, ICapturesProps } from './Captures/Captures';
+import { AvailableContent } from './AvalaibleContent/AvailableContent';
+import { Captures } from './Captures/Captures';
 import { IAuditLogCaptureManagerProps } from './IAuditLogCaptureManagerProps';
 import { IAuditLogCaptureManagerState } from './IAuditLogCaptureManagerState';
-import { escape } from '@microsoft/sp-lodash-subset';
-import { IToolbarProps, TActionGroups, Toolbar } from '@pnp/spfx-controls-react/lib/controls/toolbar';
-import * as React from 'react';
+import { Subscriptions } from "./Subscriptions/Subscriptions";
 
 export const CutomPropertyContext: any = React.createContext(undefined);
 export default class AuditLogCaptureManager extends React.Component<IAuditLogCaptureManagerProps, IAuditLogCaptureManagerState> {
@@ -25,6 +27,12 @@ export default class AuditLogCaptureManager extends React.Component<IAuditLogCap
       case "Subscriptions":
         content = <Subscriptions></Subscriptions>;
         break;
+      case "Subscriptions":
+        content = <Subscriptions></Subscriptions>;
+        break;
+      case "AvailableContent":
+        content = <AvailableContent></AvailableContent>;
+        break;
       default:
         content = <div>no action selected</div>;
     }
@@ -36,7 +44,7 @@ export default class AuditLogCaptureManager extends React.Component<IAuditLogCap
 
             actionGroups={{
               'group1': {
-                'action1': {
+                'Captures': {
                   title: 'Captures',
 
                   iconName: 'Edit',
@@ -44,13 +52,19 @@ export default class AuditLogCaptureManager extends React.Component<IAuditLogCap
                     this.setState((current) => ({ ...current, currentAction: "Captures" }));
                   }
                 },
-                'action2': {
+                'Subscriptions': {
                   title: 'Subscriptions',
                   iconName: 'Add',
                   onClick: () => {
                     this.setState((current) => ({ ...current, currentAction: "Subscriptions" }));
                   }
-
+                },
+                'AvailableContent': {
+                  title: 'AvailableContent',
+                  iconName: 'AddReaction',
+                  onClick: () => {
+                    this.setState((current) => ({ ...current, currentAction: "AvailableContent" }));
+                  }
                 }
               }
             }} />

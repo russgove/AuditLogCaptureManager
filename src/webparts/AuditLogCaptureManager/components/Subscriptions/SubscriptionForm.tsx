@@ -1,10 +1,9 @@
 import { WebPartContext } from '@microsoft/sp-webpart-base';
-import { IViewField, ListView } from '@pnp/spfx-controls-react/lib/controls/listView';
-import { getIconClassName } from '@uifabric/styling';
+
 import { DefaultButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
-import { ITextFieldProps, TextField } from 'office-ui-fabric-react/lib/TextField';
+import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import * as React from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { Subscription } from '../../model/Model';
 import { fetchAZFunc } from '../../utilities/fetchApi';
@@ -16,10 +15,10 @@ export interface ISubscriptionFormProps {
     cancel: (e: any) => void;
 }
 export const SubscriptionForm: React.FunctionComponent<ISubscriptionFormProps> = (props) => {
-    debugger;
+
     const parentContext: any = React.useContext<any>(CutomPropertyContext);
     const save = async (subscription: Subscription) => {
-        debugger;
+
         console.log(subscription.contentType);
         const url = `${parentContext.managementApiUrl}/api/StartsUBSCRIPTION?ContentType=${subscription.contentType}&address=${subscription["webhook.address"]}&authId=${subscription["webhook.authId"]}&expiration=${subscription["webhook.expiration"]}`;
         let response = await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(subscription));
@@ -53,7 +52,7 @@ export const SubscriptionForm: React.FunctionComponent<ISubscriptionFormProps> =
             {errorMessage}
             <div>
                 <PrimaryButton onClick={async (e) => {
-                    debugger;
+
                     const resp = await save(item);
                     if (resp.error) {
                         setErrorMessage(resp.error.message);

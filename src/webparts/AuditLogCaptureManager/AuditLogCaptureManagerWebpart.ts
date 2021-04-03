@@ -3,13 +3,13 @@ import { Log } from '@microsoft/sp-core-library';
 import { AadHttpClient } from '@microsoft/sp-http';
 import { IPropertyPaneConfiguration, PropertyPaneTextField } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
+import { sp } from "@pnp/sp";
 import * as strings from 'AuditLogCaptureManagerWebPartStrings';
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 
 import AuditLogCaptureManager from './components/AuditLogCaptureManager';
 import { IAuditLogCaptureManagerProps } from './components/IAuditLogCaptureManagerProps';
-import { IAuditLogCaptureManagerState } from './components/IAuditLogCaptureManagerState';
 
 const LOG_SOURCE: string = 'AuditLogCaptureMananger';
 export interface IAuditLogCaptureManagerWebPartProps {
@@ -24,6 +24,12 @@ export default class AuditLogCaptureManagerWebPart extends BaseClientSideWebPart
     Log.info(LOG_SOURCE, 'Initialized TrondocsCommandsCommandSet');
 
     return super.onInit().then(_ => {
+      sp.setup({
+        spfxContext: this.context,
+        // defaultCachingStore: "session", // or "local"
+        // defaultCachingTimeoutSeconds: 30,
+        // globalCacheDisable: true // or true to disable caching in case of debugging/testing
+      });
       if (!this.properties.managementApiUrl) {
         return;
       }
