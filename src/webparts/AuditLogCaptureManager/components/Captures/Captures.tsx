@@ -77,7 +77,7 @@ export const Captures: React.FunctionComponent<ICapturesProps> = (props) => {
             }}>Add Site</PrimaryButton>
             <ListView items={captures} viewFields={viewFields}></ListView>
 
-            <Panel type={PanelType.smallFixedFar} headerText="Edit Subscription" isOpen={mode === "Edit"} onDismiss={(e) => {
+            <Panel type={PanelType.largeFixed} headerText="Edit Subscription" isOpen={mode === "Edit"} onDismiss={(e) => {
                 setMode("Display");
             }} >
                 <CaptureForm siteToCapture={selectedItem}
