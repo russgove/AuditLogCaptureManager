@@ -1,5 +1,4 @@
 import { WebPartContext } from '@microsoft/sp-webpart-base';
-
 import { Site } from 'microsoft-graph';
 import { DefaultButton, IconButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { ComboBox, IComboBoxOption, IComboBoxProps } from 'office-ui-fabric-react/lib/ComboBox';
@@ -123,8 +122,11 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
                 setnewListName(newValue);
             }}></TextField>
             <IconButton iconProps={{ iconName: "NewFolder" }} onClick={(async (e) => {
-
-                createCaptureList(parentContext.aadHttpClient, item.siteUrl, newListName, parentContext.managementApiUrl);
+                debugger;
+                var listId = await createCaptureList(parentContext.aadHttpClient, item.siteUrl, newListName, parentContext.managementApiUrl);
+                console.log(listId);
+                setItem((temp) => ({ ...temp, captureToListId: listId }));
+                debugger;
             })}>Create</IconButton>
             <Label style={{ color: "red" }}>
                 {errorMessage}

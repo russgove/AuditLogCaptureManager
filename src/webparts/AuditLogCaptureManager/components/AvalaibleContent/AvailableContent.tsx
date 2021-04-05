@@ -1,6 +1,8 @@
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { IViewField, ListView } from '@pnp/spfx-controls-react/lib/controls/listView';
 import { getIconClassName } from '@uifabric/styling';
+import { DefaultButton, IconButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
+import { DatePicker, IDatePickerProps } from 'office-ui-fabric-react/lib/DatePicker';
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
@@ -17,10 +19,11 @@ export const AvailableContent: React.FunctionComponent<IAvailableContentProps> =
 
   const parentContext: any = React.useContext<any>(CutomPropertyContext);
   const [items, setItems] = useState<Array<Subscription>>();
+  const [selectedDate, setSelectedDate] = useState<Date>();
   const [mode, setMode] = useState<string>("display");
   const [selectedItem, setSelectedItem] = useState<Subscription>(null);
-  const fetchMyAPI = useCallback(async () => {
-    const url = parentContext.managementApiUrl + "/api/ListAvailableContent";
+  const fetchMyAPI = useCallback(async (date: Date) => {
+    const url = `${parentContext.managementApiUrl}/api/ListAvailableContent/${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
     let response = await fetchAZFunc(parentContext.aadHttpClient, url, "GET");
     debugger;
     setItems(response);
@@ -28,26 +31,33 @@ export const AvailableContent: React.FunctionComponent<IAvailableContentProps> =
 
   useEffect(() => {
 
-    fetchMyAPI();
+    fetchMyAPI(new Date());
   }, [fetchMyAPI]);
   const viewFields: IViewField[] = [
     {
       name: 'actions', displayName: 'Actions', render: (item?: any, index?: number) => {
         return <div>
-          <i className={getIconClassName('Replay')} onClick={(e) => {
-
-            setMode("Edit");
-            setSelectedItem(item);
+          <i className={getIconClassName('Redo')} onClick={async (e) => {
+            debugger;
+            const url = `${parentContext.managementApiUrl}/api/EnqueueCallbackItems`;
+            const selected = [item];
+            var response = await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(selected));
+            return response;
+          }}></i>
+          <i className={getIconClassName('View')} onClick={async (e) => {
+            debugger;
+            const url = `${parentContext.managementApiUrl}/api/EnqueueCallbackItems`;
+            const selected = [item];
+            var response = await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(selected));
+            return response;
           }}></i>
         </div>;
       }
     },
     { name: 'contentType', minWidth: 200, maxWidth: 300, displayName: 'Content Type', sorting: true, isResizable: true },
-
     { name: 'contentCreated', minWidth: 100, maxWidth: 200, displayName: 'Content Created', sorting: true, isResizable: true },
     { name: 'contentExpiration', minWidth: 100, maxWidth: 200, displayName: 'Expires', sorting: true, isResizable: true },
     { name: 'contentUri', minWidth: 240, maxWidth: 390, displayName: 'Content Uri', sorting: true, isResizable: true },
-
     { name: 'contentId', minWidth: 136, maxWidth: 200, displayName: 'ID', sorting: true, isResizable: true },
 
 
@@ -57,6 +67,15 @@ export const AvailableContent: React.FunctionComponent<IAvailableContentProps> =
   return (
     <div>
       AvailableContent {mode}
+      <DatePicker onSelectDate={(date) => {
+        setSelectedDate(date);
+      }}></DatePicker>
+      <PrimaryButton disabled={!selectedDate} onClick={async (e) => {
+        setItems([]);
+        fetchMyAPI(selectedDate);
+
+      }}>Get Available Content</PrimaryButton>
+
       <ListView items={items} viewFields={viewFields}></ListView>
 
       <Panel type={PanelType.smallFixedFar} headerText="Edit Subscription" isOpen={mode === "Edit"} onDismiss={(e) => {

@@ -1,10 +1,9 @@
 import { AadHttpClient, HttpClientResponse } from '@microsoft/sp-http';
 
-
-
 export function fetchAZFunc(client: AadHttpClient, url: string, method: string, body?: string): Promise<any> {
     const requestHeaders: Headers = new Headers();
     requestHeaders.append('Content-type', 'application/json');
+    debugger;
     return client.fetch(url,
         AadHttpClient.configurations.v1,
         {

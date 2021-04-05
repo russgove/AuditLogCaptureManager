@@ -1,3 +1,14 @@
+
+export class CallbackItem {
+    public clientId: string;
+    public contentCreated: string;
+    public contentExpiration: string;
+
+    public contentId: string;
+    public contentType: string;
+    public contentUri: string;
+    public tenantId: string;
+}
 export class Subscription {
     public contentType: string;
     public status: string;
