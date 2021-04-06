@@ -42,8 +42,9 @@ export const AvailableContent: React.FunctionComponent<IAvailableContentProps> =
             const url = `${parentContext.managementApiUrl}/api/EnqueueCallbackItems`;
             const selected = [item];
             var response = await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(selected));
-            return response;
+            alert(`${selected.length} files where queued`);
           }}></i>
+          &nbsp;&nbsp;    &nbsp;&nbsp;    &nbsp;&nbsp;
           <i className={getIconClassName('View')} onClick={async (e) => {
             debugger;
             const url = `${parentContext.managementApiUrl}/api/EnqueueCallbackItems`;
