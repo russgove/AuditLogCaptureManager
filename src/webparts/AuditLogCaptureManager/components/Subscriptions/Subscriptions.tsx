@@ -4,6 +4,7 @@ import { getIconClassName } from '@uifabric/styling';
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
+import { useMutation, useQuery } from 'react-query';
 
 import { Subscription } from '../../model/Model';
 import { fetchAZFunc } from '../../utilities/fetchApi';
@@ -20,24 +21,12 @@ export const Subscriptions: React.FunctionComponent<ISubscriptionsProps> = (prop
   const [items, setItems] = useState<Array<Subscription>>();
   const [mode, setMode] = useState<string>("display");
   const [selectedItem, setSelectedItem] = useState<Subscription>(null);
-  const fetchMyAPI = useCallback(async () => {
+  const subscriptions = useQuery<Array<Subscription>>('subscriptions', () => {
     const url = parentContext.managementApiUrl + "/api/ListSubscriptions";
-    let response = await fetchAZFunc(parentContext.aadHttpClient, url, "GET");
+    return fetchAZFunc(parentContext.aadHttpClient, url, "GET");
+  });
 
-    setItems(response);
-  }, []);
-
-  useEffect(() => {
-
-    fetchMyAPI();
-  }, [fetchMyAPI]);
   const viewFields: IViewField[] = [
-    { name: 'contentType', minWidth: 250, maxWidth: 90, displayName: 'Content Type', sorting: true, isResizable: true },
-    { name: 'status', minWidth: 136, maxWidth: 90, displayName: 'Status', sorting: true, isResizable: true },
-    { name: 'webhook.address', minWidth: 136, maxWidth: 300, displayName: 'Callback Address', sorting: true, isResizable: true },
-    { name: 'webhook.authId', minWidth: 136, maxWidth: 300, displayName: 'Auth Id', sorting: true, isResizable: true },
-    { name: 'webhook.expiration', minWidth: 136, maxWidth: 300, displayName: 'Expiration', sorting: true, isResizable: true },
-    { name: 'webhook.status', minWidth: 136, maxWidth: 300, displayName: 'Status', sorting: true, isResizable: true },
     {
       name: 'actions', displayName: 'Actions', render: (item?: any, index?: number) => {
         return <div>
@@ -48,7 +37,14 @@ export const Subscriptions: React.FunctionComponent<ISubscriptionsProps> = (prop
           }}></i>
         </div>;
       }
-    }
+    },
+    { name: 'contentType', minWidth: 250, maxWidth: 90, displayName: 'Content Type', sorting: true, isResizable: true },
+    { name: 'status', minWidth: 136, maxWidth: 90, displayName: 'Status', sorting: true, isResizable: true },
+    { name: 'webhook.address', minWidth: 136, maxWidth: 300, displayName: 'Callback Address', sorting: true, isResizable: true },
+    { name: 'webhook.authId', minWidth: 136, maxWidth: 300, displayName: 'Auth Id', sorting: true, isResizable: true },
+    { name: 'webhook.expiration', minWidth: 136, maxWidth: 300, displayName: 'Expiration', sorting: true, isResizable: true },
+    { name: 'webhook.status', minWidth: 136, maxWidth: 300, displayName: 'Status', sorting: true, isResizable: true },
+
 
   ];
 
@@ -56,14 +52,14 @@ export const Subscriptions: React.FunctionComponent<ISubscriptionsProps> = (prop
   return (
     <div>
       Subscriptions {mode}
-      <ListView items={items} viewFields={viewFields}></ListView>
+      <ListView items={subscriptions.data} viewFields={viewFields}></ListView>
 
       <Panel type={PanelType.smallFixedFar} headerText="Edit Subscription" isOpen={mode === "Edit"} onDismiss={(e) => {
         setMode("Display");
       }} >
         <SubscriptionForm subscription={selectedItem}
           cancel={(e) => {
-            fetchMyAPI();
+            subscriptions.refetch();
             setMode("Display");
           }}
         ></SubscriptionForm>

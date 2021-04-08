@@ -1,9 +1,9 @@
 import { WebPartContext } from '@microsoft/sp-webpart-base';
-
 import { DefaultButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import * as React from 'react';
 import { useState } from 'react';
+import { useMutation, useQuery } from 'react-query';
 
 import { Subscription } from '../../model/Model';
 import { fetchAZFunc } from '../../utilities/fetchApi';
@@ -17,6 +17,15 @@ export interface ISubscriptionFormProps {
 export const SubscriptionForm: React.FunctionComponent<ISubscriptionFormProps> = (props) => {
 
     const parentContext: any = React.useContext<any>(CutomPropertyContext);
+
+    const saveSubscription = useMutation((subscription: Subscription) => {
+        const url = `${parentContext.managementApiUrl}/api/StartsUBSCRIPTION?ContentType=${subscription.contentType}&address=${subscription["webhook.address"]}&authId=${subscription["webhook.authId"]}&expiration=${subscription["webhook.expiration"]}`;
+        return fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(subscription));
+    }, {
+        onSuccess: () => {
+            parentContext.queryClient.invalidateQueries('subscriptions');
+        }
+    });
     const save = async (subscription: Subscription) => {
 
         console.log(subscription.contentType);
@@ -53,30 +62,36 @@ export const SubscriptionForm: React.FunctionComponent<ISubscriptionFormProps> =
             <div>
                 <PrimaryButton onClick={async (e) => {
 
-                    const resp = await save(item);
-                    if (resp.error) {
-                        setErrorMessage(resp.error.message);
-
-                    } else {
-                        setErrorMessage("");
-                        props.cancel(e);
+                    try {
+                        debugger;
+                        saveSubscription.mutateAsync(item)
+                            .then(() => {
+                                setErrorMessage("");
+                                props.cancel(e);
+                            })
+                            .catch((err) => {
+                                setErrorMessage(err.message);
+                            });
                     }
-
-                }}>Save</PrimaryButton>
+                    catch (err) {
+                        setErrorMessage(err.message);
+                    }
+                }}
+                >Save</PrimaryButton>
                 <DefaultButton onClick={(e) => {
                     props.cancel(e);
                 }}>Cancel</DefaultButton>
             </div>
-            This operation starts a subscription to the specified content type. If a subscription to the specified content type already exists, this operation is used to:
+            This operation starts a subscription to the specified content type.If a subscription to the specified content type already exists, this operation is used to:
 
-Update the properties of an active webhook.
+    Update the properties of an active webhook.
 
-Enable a webhook that was disabled because of excessive failed notifications.
+    Enable a webhook that was disabled because of excessive failed notifications.
 
-Re-enable an expired webhook by specifying a later or null expiration date.
+        Re - enable an expired webhook by specifying a later or null expiration date.
 
-Remove a webhook.
-See https://docs.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-reference
-        </div>
+    Remove a webhook.
+    See https://docs.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-reference
+        </div >
     );
 };
