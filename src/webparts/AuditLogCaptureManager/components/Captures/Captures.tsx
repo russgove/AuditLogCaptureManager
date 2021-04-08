@@ -5,6 +5,7 @@ import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
+import { useQuery, useMutation } from 'react-query';
 
 import { SiteToCapture } from '../../model/Model';
 import { fetchAZFunc } from '../../utilities/fetchApi';
@@ -16,19 +17,21 @@ export interface ICapturesProps {
 
 }
 export const Captures: React.FunctionComponent<ICapturesProps> = (props) => {
+    const sitesToCapture = useQuery<Array<SiteToCapture>>('sitestocapture', () => {
+        const url = parentContext.managementApiUrl + "/api/ListSitesToCapture";
+        return fetchAZFunc(parentContext.aadHttpClient, url, "GET");
+    });
+    const deleteSiteToCapture = useMutation((siteToCapture: SiteToCapture) => {
+        const url = `${parentContext.managementApiUrl}/api/DeleteSiteToCapture?siteId=${siteToCapture.siteId}`;
+        return fetchAZFunc(parentContext.aadHttpClient, url, "Get");
+    }, {
+        onSuccess: () => {
+            parentContext.queryClient.invalidateQueries('sitestocapture');
+        }
+    });
     const parentContext: any = React.useContext<any>(CutomPropertyContext);
-    const [captures, setCaptures] = useState<Array<SiteToCapture>>();
     const [mode, setMode] = useState<string>("");
     const [selectedItem, setSelectedItem] = useState<SiteToCapture>(null);
-    const fetchMyAPI = useCallback(async () => {
-        const url = parentContext.managementApiUrl + "/api/ListSitesToCapture";
-        let response = await fetchAZFunc(parentContext.aadHttpClient, url, "GET");
-        setCaptures(response);
-    }, []);
-    useEffect(() => {
-        fetchMyAPI();
-    }, [fetchMyAPI]);
-
     const viewFields: IViewField[] = [
         {
             name: 'actions', displayName: 'Actions', render: (item?: any, index?: number) => {
@@ -37,18 +40,17 @@ export const Captures: React.FunctionComponent<ICapturesProps> = (props) => {
                         setMode("Edit");
                         setSelectedItem(item);
                     }}></i>
-                    {" "}
+              &nbsp;&nbsp;    &nbsp;&nbsp;    &nbsp;&nbsp;
 
                     <i className={getIconClassName('Delete')} onClick={async (e) => {
                         if (confirm("Are You Sure you wanna?")) {
-                            const url = `${parentContext.managementApiUrl}/api/DeleteSiteToCapture?siteId=${item.siteId}`;
-                            let response = await fetchAZFunc(parentContext.aadHttpClient, url, "Get");
-
-                            fetchMyAPI();
+                            deleteSiteToCapture.mutateAsync(item)
+                                .catch((err) => {
+                                    alert(err);
+                                });
                         }
 
                     }}></i>
-
                 </div>;
             }
         },
@@ -61,11 +63,7 @@ export const Captures: React.FunctionComponent<ICapturesProps> = (props) => {
         { name: 'eventsToCapture', minWidth: 200, maxWidth: 90, displayName: 'Events to Capture', sorting: true, isResizable: true },
         { name: 'captureToListId', minWidth: 136, maxWidth: 90, displayName: 'Capture To List Id', sorting: true, isResizable: true },
         { name: 'captureToSiteId', minWidth: 136, maxWidth: 90, displayName: 'Capture To Site Id', sorting: true, isResizable: true },
-
-
     ];
-
-
     return (
         <div>
             Events being Captured
@@ -75,14 +73,14 @@ export const Captures: React.FunctionComponent<ICapturesProps> = (props) => {
                 setSelectedItem(new SiteToCapture());
 
             }}>Add Site</PrimaryButton>
-            <ListView items={captures} viewFields={viewFields}></ListView>
+            <ListView items={sitesToCapture.data} viewFields={viewFields}></ListView>
 
             <Panel type={PanelType.largeFixed} headerText="Configure Site to Capture" isOpen={mode === "Edit"} onDismiss={(e) => {
                 setMode("Display");
             }} >
                 <CaptureForm siteToCapture={selectedItem}
                     cancel={(e) => {
-                        fetchMyAPI();
+                        //  fetchMyAPI();
                         setMode("Display");
                     }}
                 ></CaptureForm>

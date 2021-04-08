@@ -7,7 +7,7 @@ import { sp } from "@pnp/sp";
 import * as strings from 'AuditLogCaptureManagerWebPartStrings';
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
-
+import { QueryClient, QueryClientProvider, useQuery } from 'react-query';
 import AuditLogCaptureManager from './components/AuditLogCaptureManager';
 import { IAuditLogCaptureManagerProps } from './components/IAuditLogCaptureManagerProps';
 
@@ -44,11 +44,13 @@ export default class AuditLogCaptureManagerWebPart extends BaseClientSideWebPart
     });
   }
   public render(): void {
+    const queryClient = new QueryClient();
     const element: React.ReactElement<IAuditLogCaptureManagerProps> = React.createElement(
       AuditLogCaptureManager,
       {
         managementApiUrl: this.properties.managementApiUrl,
-        aadHttpClient: this.aadHttpClient
+        aadHttpClient: this.aadHttpClient,
+        queryClient: queryClient
       }
     );
 

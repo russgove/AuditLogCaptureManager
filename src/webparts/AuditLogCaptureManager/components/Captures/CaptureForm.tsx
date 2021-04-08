@@ -1,16 +1,19 @@
 import { WebPartContext } from '@microsoft/sp-webpart-base';
-import { Site } from 'microsoft-graph';
 import { DefaultButton, IconButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
-import { ComboBox, IComboBoxOption, IComboBoxProps } from 'office-ui-fabric-react/lib/ComboBox';
+import { ComboBox, IComboBoxOption } from 'office-ui-fabric-react/lib/ComboBox';
 import { Label } from 'office-ui-fabric-react/lib/Label';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import * as React from 'react';
 import { useState } from 'react';
+import { useMutation, useQuery } from 'react-query';
 
 import { SharePointAuditOperations, SiteToCapture } from '../../model/Model';
 import { createCaptureList } from '../../utilities/createCaptureList';
 import { fetchAZFunc } from '../../utilities/fetchApi';
+import { getList } from '../../utilities/getList';
+import { getSite } from '../../utilities/getSite';
 import { CutomPropertyContext } from '../AuditLogCaptureManager';
+import { IAuditLogCaptureManagerProps } from '../IAuditLogCaptureManagerProps';
 
 export const ListItemsWebPartContext = React.createContext<WebPartContext>(null);
 export interface ICaptureFormProps {
@@ -21,78 +24,69 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
     const options: Array<IComboBoxOption> = SharePointAuditOperations.map((sao) => {
         return { key: sao.Operation, text: sao.Description };
     });
-    const parentContext: any = React.useContext<any>(CutomPropertyContext);
-    const save = async (siteToCapture: SiteToCapture) => {
-
+    const parentContext: IAuditLogCaptureManagerProps = React.useContext<IAuditLogCaptureManagerProps>(CutomPropertyContext);
+    const saveSiteToCapture = useMutation((siteToCapture: SiteToCapture) => {
         const url = `${parentContext.managementApiUrl}/api/AddSiteToCapture?siteUrl=${siteToCapture.siteUrl}&siteId=${siteToCapture.siteId}&eventsToCapture=${siteToCapture.eventsToCapture}&captureToListId=${siteToCapture.captureToListId}&captureToSiteId=${siteToCapture.captureToSiteId}`;
-        var response = await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(siteToCapture));
-        return response;
-    };
-    const [newListName, setnewListName] = useState<string>("");
+        return fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(siteToCapture));
+    }, {
+        onSuccess: () => {
+            parentContext.queryClient.invalidateQueries('sitestocapture');
+        }
+    });
     const [item, setItem] = useState<SiteToCapture>(props.siteToCapture);
-    const [siteName, setSiteName] = useState<string>(item.siteUrl ? new URL(decodeURIComponent(item.siteUrl)).pathname.split[2] : "");
+    const siteLookup = useQuery<any>(['siteLookup', item.siteUrl], (x) => {
+        debugger;
+        setErrorMessage("");
+        return getSite(item.siteUrl);
+    }, {
+        refetchOnWindowFocus: false,
+        enabled: false, // turned off by default, manual refetch is needed
+        onSuccess: (response) => {
+            debugger;
+            setItem((temp) => ({
+                ...temp,
+                siteId: response.Id,
+                captureToSiteId: response.Id
+            }));
+        }
+        , onError: ((err: string) => {
+            setErrorMessage(err);
+        })
+    });
+    const listLookup = useQuery<any>(['listLookup', item.captureToListId], (x) => {
+        debugger;
+        setErrorMessage("");
+        return getList(item.siteUrl, item.captureToListId);
+    }, {
+        onSuccess: (response) => {
+            debugger;
+            setList(response);
+        }
+        , onError: ((err: any) => {
+            setErrorMessage(err.Message);
+        })
+    });
+    const [newListName, setnewListName] = useState<string>("");
+    const [list, setList] = useState<any>();
     const [errorMessage, setErrorMessage] = useState<string>("");
     return (
         <div>
-            <TextField label="Site Name" value={siteName}
-                onChange={(e, newValue) => {
-                    setSiteName(newValue);
-                }}
-                onBlur={async () => {
-
-                    if (siteName) {
-                        setItem((temp) => ({ ...temp, siteUrl: "", siteId: "" }));
-                        setErrorMessage("");
-                        const url = `${parentContext.managementApiUrl}/api/GetSPSiteByName/${siteName}`;
-                        var response: Site;
-                        try {
-                            response = await fetchAZFunc(parentContext.aadHttpClient, url, "GET");
-                            if (response) {
-                                setItem((temp) => ({ ...temp, siteUrl: response.webUrl, siteId: response.id.split(',')[1] }));
-                            }
-                        }
-                        catch (e) {
-
-                            setErrorMessage(e);
-                        }
-
-                    }
-                }}
-            ></TextField>
-            <TextField label="Site Url" value={item.siteUrl}
+            <TextField label="Site Url" value={decodeURIComponent(item.siteUrl)}
                 onChange={(e, newValue) => {
                     setItem((temp) => ({ ...temp, siteUrl: newValue }));
                 }}
                 onBlur={async () => {
-                    if (item.siteUrl) {
-                        setItem((temp) => ({ ...temp, siteId: "" }));
-                        setErrorMessage("");
-                        const url = `${parentContext.managementApiUrl}/api/GetSPSiteByName/${item.siteUrl}`;
-                        try {
-                            var response: Site = await fetchAZFunc(parentContext.aadHttpClient, url, "GET");
-                            if (response) {
-                                setItem((temp) => ({ ...temp, siteUrl: response.webUrl, siteId: response.id.split(',')[1], captureToSiteId: response.id.split(',')[1] }));
-                            }
-                        }
-                        catch (e) {
+                    debugger;
+                    siteLookup.refetch();
 
-                            setErrorMessage(e);
-                        }
-
-                    }
-                }
-                }
+                }}
             ></TextField>
             <TextField label="Site ID" value={item.siteId}
                 onChange={(e, newValue) => {
                     setItem((temp) => ({ ...temp, siteId: newValue }));
                 }}
             ></TextField>
-            <TextField label="Events To Capture" value={item.eventsToCapture}
-                onChange={(e, newValue) => {
-                    setItem((temp) => ({ ...temp, eventsToCapture: newValue }));
-                }}
-            ></TextField>
+
             <ComboBox label="Events To Capture" options={options} multiSelect={true}
                 text={item.eventsToCapture}
                 dropdownWidth={800}
@@ -103,7 +97,6 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
 
                 }}
                 onResolveOptions={(e) => {
-
                     return e;
                 }}
             >
@@ -117,11 +110,14 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
                 setItem((temp) => ({ ...temp, captureToListId: newValue }));
             }}></TextField>
 
-
+            <TextField label="Capture To List" value={list ? list.Title : ""} ></TextField>
+            <TextField label="New Capture To List" value={newListName} onChange={(e, newValue) => {
+                setnewListName(newValue);
+            }}></TextField>
             <TextField label="Capture To List" value={newListName} onChange={(e, newValue) => {
                 setnewListName(newValue);
             }}></TextField>
-            <IconButton iconProps={{ iconName: "NewFolder" }} onClick={(async (e) => {
+            <IconButton iconProps={{ iconName: "NewFolder" }} text="Crate" label="DDDD" onClick={(async (e) => {
                 debugger;
                 var listId = await createCaptureList(parentContext.aadHttpClient, item.siteUrl, newListName, parentContext.managementApiUrl);
                 console.log(listId);
@@ -135,16 +131,20 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
 
             <div>
                 <PrimaryButton disabled={!item.siteId || !item.siteUrl || !item.eventsToCapture || !item.captureToListId || !item.captureToSiteId} onClick={async (e) => {
-
-                    const resp = await save(item);
-                    if (resp.error) {
-                        setErrorMessage(resp.error.message);
+                    try {
+                        debugger;
+                        saveSiteToCapture.mutateAsync(item)
+                            .then(() => {
+                                setErrorMessage("");
+                                props.cancel(e);
+                            })
+                            .catch((err) => {
+                                setErrorMessage(err.message);
+                            });
                     }
-                    else {
-                        setErrorMessage("");
-                        props.cancel(e);
+                    catch (err) {
+                        setErrorMessage(err.message);
                     }
-
                 }}>Save</PrimaryButton>
                 <DefaultButton onClick={(e) => {
                     props.cancel(e);

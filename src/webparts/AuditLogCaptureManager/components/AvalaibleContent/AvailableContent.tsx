@@ -1,8 +1,8 @@
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { IViewField, ListView } from '@pnp/spfx-controls-react/lib/controls/listView';
 import { getIconClassName } from '@uifabric/styling';
-import { DefaultButton, IconButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
-import { DatePicker, IDatePickerProps } from 'office-ui-fabric-react/lib/DatePicker';
+import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
+import { DatePicker } from 'office-ui-fabric-react/lib/DatePicker';
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
@@ -10,16 +10,22 @@ import { useCallback, useEffect, useState } from 'react';
 import { Subscription } from '../../model/Model';
 import { fetchAZFunc } from '../../utilities/fetchApi';
 import { CutomPropertyContext } from '../AuditLogCaptureManager';
-
+import { useQuery } from 'react-query';
 export const ListItemsWebPartContext = React.createContext<WebPartContext>(null);
 export interface IAvailableContentProps {
 
 }
 export const AvailableContent: React.FunctionComponent<IAvailableContentProps> = (props) => {
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const { isLoading, error, data } = useQuery<Subscription>('repoData', () => {
+    var date = new Date();
+    const url = `${parentContext.managementApiUrl}/api/ListAvailableContent/${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()}`;
+    return fetchAZFunc(parentContext.aadHttpClient, url, "GET");
+  });
 
   const parentContext: any = React.useContext<any>(CutomPropertyContext);
   const [items, setItems] = useState<Array<Subscription>>();
-  const [selectedDate, setSelectedDate] = useState<Date>();
+
   const [mode, setMode] = useState<string>("display");
   const [selectedItem, setSelectedItem] = useState<Subscription>(null);
   const fetchMyAPI = useCallback(async (date: Date) => {
@@ -42,6 +48,7 @@ export const AvailableContent: React.FunctionComponent<IAvailableContentProps> =
             const url = `${parentContext.managementApiUrl}/api/EnqueueCallbackItems`;
             const selected = [item];
             var response = await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(selected));
+
             alert(`${selected.length} files where queued`);
           }}></i>
           &nbsp;&nbsp;    &nbsp;&nbsp;    &nbsp;&nbsp;
