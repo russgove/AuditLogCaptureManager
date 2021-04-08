@@ -3,8 +3,8 @@ import { IViewField, ListView } from '@pnp/spfx-controls-react/lib/controls/list
 import { getIconClassName } from '@uifabric/styling';
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import * as React from 'react';
-import { useCallback, useEffect, useState } from 'react';
-import { useMutation, useQuery } from 'react-query';
+import { useState } from 'react';
+import { useQuery } from 'react-query';
 
 import { Subscription } from '../../model/Model';
 import { fetchAZFunc } from '../../utilities/fetchApi';
@@ -12,13 +12,8 @@ import { CutomPropertyContext } from '../AuditLogCaptureManager';
 import { SubscriptionForm } from './SubscriptionForm';
 
 export const ListItemsWebPartContext = React.createContext<WebPartContext>(null);
-export interface ISubscriptionsProps {
-
-}
-export const Subscriptions: React.FunctionComponent<ISubscriptionsProps> = (props) => {
-
+export const Subscriptions: React.FunctionComponent = () => {
   const parentContext: any = React.useContext<any>(CutomPropertyContext);
-  const [items, setItems] = useState<Array<Subscription>>();
   const [mode, setMode] = useState<string>("display");
   const [selectedItem, setSelectedItem] = useState<Subscription>(null);
   const subscriptions = useQuery<Array<Subscription>>('subscriptions', () => {
@@ -44,16 +39,11 @@ export const Subscriptions: React.FunctionComponent<ISubscriptionsProps> = (prop
     { name: 'webhook.authId', minWidth: 136, maxWidth: 300, displayName: 'Auth Id', sorting: true, isResizable: true },
     { name: 'webhook.expiration', minWidth: 136, maxWidth: 300, displayName: 'Expiration', sorting: true, isResizable: true },
     { name: 'webhook.status', minWidth: 136, maxWidth: 300, displayName: 'Status', sorting: true, isResizable: true },
-
-
   ];
-
-
   return (
     <div>
       Subscriptions {mode}
       <ListView items={subscriptions.data} viewFields={viewFields}></ListView>
-
       <Panel type={PanelType.smallFixedFar} headerText="Edit Subscription" isOpen={mode === "Edit"} onDismiss={(e) => {
         setMode("Display");
       }} >

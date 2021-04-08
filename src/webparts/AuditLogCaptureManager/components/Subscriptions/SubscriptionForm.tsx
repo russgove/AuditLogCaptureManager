@@ -3,7 +3,7 @@ import { DefaultButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button'
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import * as React from 'react';
 import { useState } from 'react';
-import { useMutation, useQuery } from 'react-query';
+import { useMutation } from 'react-query';
 
 import { Subscription } from '../../model/Model';
 import { fetchAZFunc } from '../../utilities/fetchApi';
@@ -26,17 +26,8 @@ export const SubscriptionForm: React.FunctionComponent<ISubscriptionFormProps> =
             parentContext.queryClient.invalidateQueries('subscriptions');
         }
     });
-    const save = async (subscription: Subscription) => {
-
-        console.log(subscription.contentType);
-        const url = `${parentContext.managementApiUrl}/api/StartsUBSCRIPTION?ContentType=${subscription.contentType}&address=${subscription["webhook.address"]}&authId=${subscription["webhook.authId"]}&expiration=${subscription["webhook.expiration"]}`;
-        let response = await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(subscription));
-        return response;
-    };
     const [item, setItem] = useState<Subscription>(props.subscription);
     const [errorMessage, setErrorMessage] = useState<string>("");
-
-
     return (
         <div>
 

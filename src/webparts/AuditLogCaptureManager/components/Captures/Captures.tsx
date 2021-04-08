@@ -4,7 +4,7 @@ import { getIconClassName } from '@uifabric/styling';
 import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import * as React from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation } from 'react-query';
 
 import { SiteToCapture } from '../../model/Model';
@@ -13,10 +13,8 @@ import { CutomPropertyContext } from '../AuditLogCaptureManager';
 import { CaptureForm } from './CaptureForm';
 
 export const ListItemsWebPartContext = React.createContext<WebPartContext>(null);
-export interface ICapturesProps {
 
-}
-export const Captures: React.FunctionComponent<ICapturesProps> = (props) => {
+export const Captures: React.FunctionComponent = () => {
     const sitesToCapture = useQuery<Array<SiteToCapture>>('sitestocapture', () => {
         const url = parentContext.managementApiUrl + "/api/ListSitesToCapture";
         return fetchAZFunc(parentContext.aadHttpClient, url, "GET");

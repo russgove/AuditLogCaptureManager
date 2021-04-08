@@ -5,40 +5,29 @@ import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { DatePicker } from 'office-ui-fabric-react/lib/DatePicker';
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import * as React from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery } from 'react-query';
 
 import { Subscription } from '../../model/Model';
 import { fetchAZFunc } from '../../utilities/fetchApi';
 import { CutomPropertyContext } from '../AuditLogCaptureManager';
-import { useQuery } from 'react-query';
-export const ListItemsWebPartContext = React.createContext<WebPartContext>(null);
-export interface IAvailableContentProps {
 
-}
-export const AvailableContent: React.FunctionComponent<IAvailableContentProps> = (props) => {
+export const ListItemsWebPartContext = React.createContext<WebPartContext>(null);
+
+export const AvailableContent: React.FunctionComponent = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const { isLoading, error, data } = useQuery<Subscription>('repoData', () => {
+  const availableContent = useQuery<any>('availablecontent', () => {
     var date = new Date();
     const url = `${parentContext.managementApiUrl}/api/ListAvailableContent/${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()}`;
     return fetchAZFunc(parentContext.aadHttpClient, url, "GET");
-  });
+  }, { refetchOnWindowFocus: false, enabled: false });
 
   const parentContext: any = React.useContext<any>(CutomPropertyContext);
   const [items, setItems] = useState<Array<Subscription>>();
 
   const [mode, setMode] = useState<string>("display");
   const [selectedItem, setSelectedItem] = useState<Subscription>(null);
-  const fetchMyAPI = useCallback(async (date: Date) => {
-    const url = `${parentContext.managementApiUrl}/api/ListAvailableContent/${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-    let response = await fetchAZFunc(parentContext.aadHttpClient, url, "GET");
-    debugger;
-    setItems(response);
-  }, []);
 
-  useEffect(() => {
-
-    fetchMyAPI(new Date());
-  }, [fetchMyAPI]);
   const viewFields: IViewField[] = [
     {
       name: 'actions', displayName: 'Actions', render: (item?: any, index?: number) => {
@@ -75,16 +64,17 @@ export const AvailableContent: React.FunctionComponent<IAvailableContentProps> =
   return (
     <div>
       AvailableContent {mode}
-      <DatePicker onSelectDate={(date) => {
+      <DatePicker value={selectedDate} onSelectDate={(date) => {
         setSelectedDate(date);
       }}></DatePicker>
-      <PrimaryButton disabled={!selectedDate} onClick={async (e) => {
-        setItems([]);
-        fetchMyAPI(selectedDate);
+      <PrimaryButton disabled={!selectedDate || availableContent.isFetching} onClick={async (e) => {
+        debugger;
+
+        availableContent.refetch();
 
       }}>Get Available Content</PrimaryButton>
 
-      <ListView items={items} viewFields={viewFields}></ListView>
+      <ListView items={availableContent.data} viewFields={viewFields}></ListView>
 
       <Panel type={PanelType.smallFixedFar} headerText="Edit Subscription" isOpen={mode === "Edit"} onDismiss={(e) => {
         setMode("Display");
