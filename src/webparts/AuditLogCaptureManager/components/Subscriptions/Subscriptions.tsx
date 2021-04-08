@@ -1,9 +1,7 @@
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { IViewField, ListView } from '@pnp/spfx-controls-react/lib/controls/listView';
 import { getIconClassName } from '@uifabric/styling';
-
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
-
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
