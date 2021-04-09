@@ -1,57 +1,90 @@
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { IViewField, ListView } from '@pnp/spfx-controls-react/lib/controls/listView';
 import { getIconClassName } from '@uifabric/styling';
+import { IButtonProps, IconButton, Layer } from 'office-ui-fabric-react';
 import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
+import { ContextualMenuItemType } from 'office-ui-fabric-react/lib/ContextualMenu';
 import { DatePicker } from 'office-ui-fabric-react/lib/DatePicker';
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import * as React from 'react';
 import { useState } from 'react';
 import { useQuery } from 'react-query';
 
-import { Subscription } from '../../model/Model';
+import { AuditItem, CallbackItem, Subscription } from '../../model/Model';
 import { fetchAZFunc } from '../../utilities/fetchApi';
 import { CutomPropertyContext } from '../AuditLogCaptureManager';
+import { CallbackItemECB, CallbackItemECBProps } from './CallbackItemECB';
 
 export const ListItemsWebPartContext = React.createContext<WebPartContext>(null);
-
 export const AvailableContent: React.FunctionComponent = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const availableContent = useQuery<any>('availablecontent', () => {
-    var date = new Date();
+  const callbackItems = useQuery<CallbackItem[]>('callbackitems', () => {
     const url = `${parentContext.managementApiUrl}/api/ListAvailableContent/${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()}`;
     return fetchAZFunc(parentContext.aadHttpClient, url, "GET");
-  }, { refetchOnWindowFocus: false, enabled: false });
+  },
+    { refetchOnWindowFocus: false, enabled: false }
+  );
+
+
+
+  const [selectedCallbackItem, setSelectedCallbackItem] = useState<CallbackItem>(null);
+  const auditItems = useQuery<AuditItem[]>(['audititems', selectedCallbackItem], () => {
+    debugger;
+    const url = `${parentContext.managementApiUrl}/api/FetchAvailableContentItem?contentUri=${encodeURIComponent(selectedCallbackItem.contentUri)}`;
+    console.log(url)
+    return fetchAZFunc(parentContext.aadHttpClient, url, "GET");
+  },
+    { refetchOnWindowFocus: false, enabled: true });
 
   const parentContext: any = React.useContext<any>(CutomPropertyContext);
-  const [items, setItems] = useState<Array<Subscription>>();
-
   const [mode, setMode] = useState<string>("display");
-  const [selectedItem, setSelectedItem] = useState<Subscription>(null);
+  const viewCallback = async (item: CallbackItem) => {
+    debugger;
 
-  const viewFields: IViewField[] = [
+    // // CANT DO THIS HERE, IT IS IN Anevent handler
+    // const url = `${parentContext.managementApiUrl}/api/EnqueueCallbackItems`;
+    // const selected = [item];
+    // await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(selected));
+    // alert(`${selected.length} files where queued`);
+  }
+  const viewFieldsCallbackItems: IViewField[] = [
     {
       name: 'actions', displayName: 'Actions', render: (item?: any, index?: number) => {
         return <div>
-          <i className={getIconClassName('Redo')} onClick={async (e) => {
-            debugger;
-            const url = `${parentContext.managementApiUrl}/api/EnqueueCallbackItems`;
-            const selected = [item];
-            var response = await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(selected));
-
-            alert(`${selected.length} files where queued`);
-          }}></i>
+          <i className={getIconClassName('Redo')}
+            onClick={async (e) => {
+              debugger;
+              const url = `${parentContext.managementApiUrl}/api/EnqueueCallbackItems`;
+              const selected = [item];
+              await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(selected));
+              alert(`${selected.length} files where queued`);
+            }}></i>
           &nbsp;&nbsp;    &nbsp;&nbsp;    &nbsp;&nbsp;
-          <i className={getIconClassName('View')} onClick={async (e) => {
+          <i className={getIconClassName('View')} onClick={(e) => {
             debugger;
-            const url = `${parentContext.managementApiUrl}/api/EnqueueCallbackItems`;
-            const selected = [item];
-            var response = await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(selected));
-            return response;
+            setSelectedCallbackItem(item);
+            setMode("showselected");
+
           }}></i>
         </div>;
       }
     },
     { name: 'contentType', minWidth: 200, maxWidth: 300, displayName: 'Content Type', sorting: true, isResizable: true },
+    // {
+    //   name: "",
+    //   sorting: false,
+    //   maxWidth: 40,
+    //   render: (rowitem: CallbackItem) => {
+    //     const element: React.ReactElement<CallbackItemECBProps> = React.createElement(
+    //       CallbackItemECB,
+    //       {
+    //         callbackItem: rowitem,
+    //         viewCallback: viewCallback
+    //       }
+    //     );
+    //     return element;
+    //   }
+    // },
     { name: 'contentCreated', minWidth: 100, maxWidth: 200, displayName: 'Content Created', sorting: true, isResizable: true },
     { name: 'contentExpiration', minWidth: 100, maxWidth: 200, displayName: 'Expires', sorting: true, isResizable: true },
     { name: 'contentUri', minWidth: 240, maxWidth: 390, displayName: 'Content Uri', sorting: true, isResizable: true },
@@ -59,27 +92,79 @@ export const AvailableContent: React.FunctionComponent = () => {
 
 
   ];
+  const viewFieldsAuditItems: IViewField[] = [
+    {
+      name: 'actions', displayName: 'Actions', render: (item?: any, index?: number) => {
+        return <div>
+          <i className={getIconClassName('Redo')} onClick={async (e) => {
+            debugger;
+            const url = `${parentContext.managementApiUrl}/api/EnqueueCallbackItems`;
+            const selected = [item];
+            await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(selected));
+            alert(`${selected.length} files where queued`);
+          }}></i>
+          &nbsp;&nbsp;    &nbsp;&nbsp;    &nbsp;&nbsp;
+          <i className={getIconClassName('View')} onClick={async (e) => {
+            setSelectedCallbackItem(item);
+            setMode("showselected")
+            auditItems.refetch();
+          }}></i>
+        </div>;
+      }
+    },
+    { name: 'CreationTime', minWidth: 200, maxWidth: 300, displayName: 'CreationTime ', sorting: true, isResizable: true },
+    { name: 'Id', minWidth: 200, maxWidth: 300, displayName: 'Id ', sorting: true, isResizable: true },
+    { name: 'Operation', minWidth: 200, maxWidth: 300, displayName: 'Operation ', sorting: true, isResizable: true },
+    { name: 'OrganizationId', minWidth: 200, maxWidth: 300, displayName: 'OrganizationId ', sorting: true, isResizable: true },
+    { name: 'RecordType', minWidth: 200, maxWidth: 300, displayName: 'RecordType ', sorting: true, isResizable: true },
+    { name: 'UserType', minWidth: 200, maxWidth: 300, displayName: 'UserType ', sorting: true, isResizable: true },
+    { name: 'UserKey', minWidth: 200, maxWidth: 300, displayName: 'UserKey ', sorting: true, isResizable: true },
+    { name: 'Version', minWidth: 200, maxWidth: 300, displayName: 'Version', sorting: true, isResizable: true },
+    { name: 'Workload', minWidth: 200, maxWidth: 300, displayName: 'Workload ', sorting: true, isResizable: true },
+    { name: 'ClientIP', minWidth: 200, maxWidth: 300, displayName: 'ClientIP ', sorting: true, isResizable: true },
+    { name: 'ObjectId', minWidth: 200, maxWidth: 300, displayName: 'ObjectId ', sorting: true, isResizable: true },
+    { name: 'UserId', minWidth: 200, maxWidth: 300, displayName: 'UserId ', sorting: true, isResizable: true },
+    { name: 'CorrelationId', minWidth: 200, maxWidth: 300, displayName: 'CorrelationId ', sorting: true, isResizable: true },
+    { name: 'CustomUniqueId', minWidth: 200, maxWidth: 300, displayName: 'CustomUniqueId ', sorting: true, isResizable: true },
+    { name: 'EventSource', minWidth: 200, maxWidth: 300, displayName: 'EventSource ', sorting: true, isResizable: true },
+    { name: 'ItemType', minWidth: 200, maxWidth: 300, displayName: 'ItemType ', sorting: true, isResizable: true },
+    { name: 'ListId', minWidth: 200, maxWidth: 300, displayName: 'ListId ', sorting: true, isResizable: true },
+    { name: 'ListItemUniqueId', minWidth: 200, maxWidth: 300, displayName: ' ', sorting: true, isResizable: true },
+    { name: 'Site', minWidth: 200, maxWidth: 300, displayName: 'Site ', sorting: true, isResizable: true },
+    { name: 'UserAgent', minWidth: 200, maxWidth: 300, displayName: 'UserAgent ', sorting: true, isResizable: true },
+    { name: 'WebId', minWidth: 200, maxWidth: 300, displayName: 'WebId  ', sorting: true, isResizable: true },
+    { name: 'SourceFileExtension', minWidth: 200, maxWidth: 300, displayName: 'SourceFileExtension  ', sorting: true, isResizable: true },
+    { name: 'SiteUrl', minWidth: 200, maxWidth: 300, displayName: 'SiteUrl  ', sorting: true, isResizable: true },
+    { name: 'SourceFileName', minWidth: 200, maxWidth: 300, displayName: 'SourceFileName  ', sorting: true, isResizable: true },
+    { name: 'SourceRelativeUrl', minWidth: 200, maxWidth: 300, displayName: 'SourceRelativeUrl  ', sorting: true, isResizable: true },
+    { name: 'HighPriorityMediaProcessing', minWidth: 200, maxWidth: 300, displayName: 'HighPriorityMediaProcessing  ', sorting: true, isResizable: true },
+    { name: 'DoNotDistributeEvent', minWidth: 200, maxWidth: 300, displayName: 'DoNotDistributeEvent  ', sorting: true, isResizable: true },
+    { name: 'FromApp', minWidth: 200, maxWidth: 300, displayName: 'FromApp  ', sorting: true, isResizable: true },
+    { name: 'IsDocLib', minWidth: 200, maxWidth: 300, displayName: 'IsDocLib  ', sorting: true, isResizable: true },
 
+
+  ];
 
   return (
     <div>
       AvailableContent {mode}
-      <DatePicker value={selectedDate} onSelectDate={(date) => {
-        setSelectedDate(date);
-      }}></DatePicker>
-      <PrimaryButton disabled={!selectedDate || availableContent.isFetching} onClick={async (e) => {
-        debugger;
+      <DatePicker value={selectedDate}
+        onSelectDate={(date) => {
+          setSelectedDate(date);
+        }}></DatePicker>
+      <PrimaryButton disabled={!selectedDate || callbackItems.isFetching}
+        onClick={async (e) => {
+          debugger;
+          callbackItems.refetch();
 
-        availableContent.refetch();
+        }}>Get Available Content</PrimaryButton>
 
-      }}>Get Available Content</PrimaryButton>
+      <ListView items={callbackItems.data} viewFields={viewFieldsCallbackItems}></ListView>
 
-      <ListView items={availableContent.data} viewFields={viewFields}></ListView>
-
-      <Panel type={PanelType.smallFixedFar} headerText="Edit Subscription" isOpen={mode === "Edit"} onDismiss={(e) => {
+      <Panel type={PanelType.extraLarge} headerText="Audit Items" isOpen={mode === "showselected"} onDismiss={(e) => {
         setMode("Display");
       }} >
-
+        <ListView items={auditItems.data} viewFields={viewFieldsAuditItems}></ListView>
       </Panel>
     </div>
   );

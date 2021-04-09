@@ -1,7 +1,8 @@
-
 import { Toolbar } from '@pnp/spfx-controls-react/lib/controls/toolbar';
 import * as React from 'react';
 import { QueryClient, QueryClientProvider, useQuery } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools'
+
 import styles from './AuditLogCaptureManager.module.scss';
 import { AvailableContent } from './AvalaibleContent/AvailableContent';
 import { Captures } from './Captures/Captures';
@@ -40,6 +41,7 @@ export default class AuditLogCaptureManager extends React.Component<IAuditLogCap
     return (
       <div className={styles.AuditLogCaptureManager}>
         <QueryClientProvider client={this.props.queryClient}>
+          <ReactQueryDevtools initialIsOpen={true} />
           <CutomPropertyContext.Provider value={this.props}>
             <Toolbar
 

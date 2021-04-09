@@ -28,6 +28,44 @@ export class SiteToCapture {
     public captureToSiteId: string;
     public captureToListId: string;
 }
+
+export class AuditItem {
+    public CreationTime: string;
+    public Id: string;
+    public Operation: string;
+    public OrganizationId: string;
+    public RecordType: number;
+    public UserType: number;
+    public UserKey: string;
+    public Version: number;
+    public Workload: string;
+    public ClientIP: string;
+    public ObjectId: string;
+
+    public UserId: string;
+    public CorrelationId: string;
+    public CustomUniqueId: boolean;
+    public EventSource: string;
+    public ItemType: string;
+    public ListId: string;
+    public ListItemUniqueId: string;
+    public Site: string;
+    public UserAgent: string;
+    public WebId: string;
+    public SourceFileExtension: string;
+    public SiteUrl: string;
+    public SourceFileName: string;
+    public SourceRelativeUrl: string;
+
+    public HighPriorityMediaProcessing: boolean;
+
+    public DoNotDistributeEvent: boolean;
+    public FromApp: boolean;
+    public IsDocLib: boolean;
+
+
+
+}
 export var SharePointAuditOperations = [
     { Operation: "AccessInvitationAccepted", Description: "The recipient of an invitation to view or edit a shared file (or folder) has accessed the shared file by clicking on the link in the invitation." },
     { Operation: "AccessInvitationCreated", Description: "User sends an invitation to another person (inside or outside their organization) to view or edit a shared file or folder on a SharePoint or OneDrive for Business site. The details of the event entry identifies the name of the file that was shared, the user the invitation was sent to, and the type of the sharing permission selected by the person who sent the invitation." },
