@@ -49,7 +49,7 @@ export const AvailableContent: React.FunctionComponent = () => {
   }
   const viewFieldsCallbackItems: IViewField[] = [
     {
-      name: 'actions', displayName: 'Actions', render: (item?: any, index?: number) => {
+      name: 'actions', minWidth: 50, maxWidth: 50, displayName: 'Actions', render: (item?: any, index?: number) => {
         return <div>
           <i className={getIconClassName('Redo')}
             onClick={async (e) => {
@@ -69,7 +69,7 @@ export const AvailableContent: React.FunctionComponent = () => {
         </div>;
       }
     },
-    { name: 'contentType', minWidth: 200, maxWidth: 300, displayName: 'Content Type', sorting: true, isResizable: true },
+    { name: 'contentType', minWidth: 100, maxWidth: 200, displayName: 'Content Type', sorting: true, isResizable: true },
     // {
     //   name: "",
     //   sorting: false,
@@ -85,16 +85,16 @@ export const AvailableContent: React.FunctionComponent = () => {
     //     return element;
     //   }
     // },
-    { name: 'contentCreated', minWidth: 100, maxWidth: 200, displayName: 'Content Created', sorting: true, isResizable: true },
-    { name: 'contentExpiration', minWidth: 100, maxWidth: 200, displayName: 'Expires', sorting: true, isResizable: true },
-    { name: 'contentUri', minWidth: 240, maxWidth: 390, displayName: 'Content Uri', sorting: true, isResizable: true },
-    { name: 'contentId', minWidth: 136, maxWidth: 200, displayName: 'ID', sorting: true, isResizable: true },
+    { name: 'contentCreated', minWidth: 80, maxWidth: 120, displayName: 'Content Created', sorting: true, isResizable: true },
+    { name: 'contentExpiration', minWidth: 80, maxWidth: 120, displayName: 'Expires', sorting: true, isResizable: true },
+    { name: 'contentUri', minWidth: 40, maxWidth: 500, displayName: 'Content Uri', sorting: true, isResizable: true },
+    { name: 'contentId', minWidth: 40, maxWidth: 300, displayName: 'ID', sorting: true, isResizable: true },
 
 
   ];
   const viewFieldsAuditItems: IViewField[] = [
     {
-      name: 'actions', displayName: 'Actions', render: (item?: any, index?: number) => {
+      name: 'actions', minWidth: 50, maxWidth: 50, displayName: 'Actions', render: (item?: any, index?: number) => {
         return <div>
           <i className={getIconClassName('Redo')} onClick={async (e) => {
             debugger;
@@ -112,35 +112,38 @@ export const AvailableContent: React.FunctionComponent = () => {
         </div>;
       }
     },
-    { name: 'CreationTime', minWidth: 200, maxWidth: 300, displayName: 'CreationTime ', sorting: true, isResizable: true },
-    { name: 'Id', minWidth: 200, maxWidth: 300, displayName: 'Id ', sorting: true, isResizable: true },
-    { name: 'Operation', minWidth: 200, maxWidth: 300, displayName: 'Operation ', sorting: true, isResizable: true },
-    { name: 'OrganizationId', minWidth: 200, maxWidth: 300, displayName: 'OrganizationId ', sorting: true, isResizable: true },
-    { name: 'RecordType', minWidth: 200, maxWidth: 300, displayName: 'RecordType ', sorting: true, isResizable: true },
-    { name: 'UserType', minWidth: 200, maxWidth: 300, displayName: 'UserType ', sorting: true, isResizable: true },
-    { name: 'UserKey', minWidth: 200, maxWidth: 300, displayName: 'UserKey ', sorting: true, isResizable: true },
-    { name: 'Version', minWidth: 200, maxWidth: 300, displayName: 'Version', sorting: true, isResizable: true },
-    { name: 'Workload', minWidth: 200, maxWidth: 300, displayName: 'Workload ', sorting: true, isResizable: true },
-    { name: 'ClientIP', minWidth: 200, maxWidth: 300, displayName: 'ClientIP ', sorting: true, isResizable: true },
-    { name: 'ObjectId', minWidth: 200, maxWidth: 300, displayName: 'ObjectId ', sorting: true, isResizable: true },
-    { name: 'UserId', minWidth: 200, maxWidth: 300, displayName: 'UserId ', sorting: true, isResizable: true },
-    { name: 'CorrelationId', minWidth: 200, maxWidth: 300, displayName: 'CorrelationId ', sorting: true, isResizable: true },
-    { name: 'CustomUniqueId', minWidth: 200, maxWidth: 300, displayName: 'CustomUniqueId ', sorting: true, isResizable: true },
-    { name: 'EventSource', minWidth: 200, maxWidth: 300, displayName: 'EventSource ', sorting: true, isResizable: true },
-    { name: 'ItemType', minWidth: 200, maxWidth: 300, displayName: 'ItemType ', sorting: true, isResizable: true },
-    { name: 'ListId', minWidth: 200, maxWidth: 300, displayName: 'ListId ', sorting: true, isResizable: true },
-    { name: 'ListItemUniqueId', minWidth: 200, maxWidth: 300, displayName: ' ', sorting: true, isResizable: true },
-    { name: 'Site', minWidth: 200, maxWidth: 300, displayName: 'Site ', sorting: true, isResizable: true },
-    { name: 'UserAgent', minWidth: 200, maxWidth: 300, displayName: 'UserAgent ', sorting: true, isResizable: true },
-    { name: 'WebId', minWidth: 200, maxWidth: 300, displayName: 'WebId  ', sorting: true, isResizable: true },
-    { name: 'SourceFileExtension', minWidth: 200, maxWidth: 300, displayName: 'SourceFileExtension  ', sorting: true, isResizable: true },
+    { name: 'CreationTime', minWidth: 150, maxWidth: 300, displayName: 'CreationTime ', sorting: true, isResizable: true },
+    { name: 'UserId', minWidth: 300, maxWidth: 300, displayName: 'UserId ', sorting: true, isResizable: true },
+    { name: 'Operation', minWidth: 100, maxWidth: 100, displayName: 'Operation ', sorting: true, isResizable: true },
+    { name: 'ClientIP', minWidth: 100, maxWidth: 200, displayName: 'ClientIP ', sorting: true, isResizable: true },
+    { name: 'ItemType', minWidth: 100, maxWidth: 100, displayName: 'ItemType ', sorting: true, isResizable: true },
+    { name: 'Operation', minWidth: 100, maxWidth: 100, displayName: 'Operation ', sorting: true, isResizable: true },
     { name: 'SiteUrl', minWidth: 200, maxWidth: 300, displayName: 'SiteUrl  ', sorting: true, isResizable: true },
     { name: 'SourceFileName', minWidth: 200, maxWidth: 300, displayName: 'SourceFileName  ', sorting: true, isResizable: true },
     { name: 'SourceRelativeUrl', minWidth: 200, maxWidth: 300, displayName: 'SourceRelativeUrl  ', sorting: true, isResizable: true },
-    { name: 'HighPriorityMediaProcessing', minWidth: 200, maxWidth: 300, displayName: 'HighPriorityMediaProcessing  ', sorting: true, isResizable: true },
-    { name: 'DoNotDistributeEvent', minWidth: 200, maxWidth: 300, displayName: 'DoNotDistributeEvent  ', sorting: true, isResizable: true },
-    { name: 'FromApp', minWidth: 200, maxWidth: 300, displayName: 'FromApp  ', sorting: true, isResizable: true },
-    { name: 'IsDocLib', minWidth: 200, maxWidth: 300, displayName: 'IsDocLib  ', sorting: true, isResizable: true },
+    { name: 'FromApp', minWidth: 100, maxWidth: 100, displayName: 'FromApp  ', sorting: true, isResizable: true },
+    { name: 'UserType', minWidth: 200, maxWidth: 400, displayName: 'UserType ', sorting: true, isResizable: true },
+    { name: 'UserKey', minWidth: 200, maxWidth: 400, displayName: 'UserKey ', sorting: true, isResizable: true },
+    { name: 'UserAgent', minWidth: 400, maxWidth: 600, displayName: 'UserAgent ', sorting: true, isResizable: true },
+
+
+    { name: 'Id', minWidth: 100, maxWidth: 200, displayName: 'Id ', sorting: true, isResizable: true },
+    { name: 'OrganizationId', minWidth: 100, maxWidth: 200, displayName: 'OrganizationId ', sorting: true, isResizable: true },
+    { name: 'RecordType', minWidth: 100, maxWidth: 200, displayName: 'RecordType ', sorting: true, isResizable: true },
+    { name: 'Version', minWidth: 100, maxWidth: 300, displayName: 'Version', sorting: true, isResizable: true },
+    { name: 'Workload', minWidth: 100, maxWidth: 300, displayName: 'Workload ', sorting: true, isResizable: true },
+    { name: 'ObjectId', minWidth: 100, maxWidth: 300, displayName: 'ObjectId ', sorting: true, isResizable: true },
+    { name: 'CorrelationId', minWidth: 100, maxWidth: 300, displayName: 'CorrelationId ', sorting: true, isResizable: true },
+    { name: 'CustomUniqueId', minWidth: 100, maxWidth: 300, displayName: 'CustomUniqueId ', sorting: true, isResizable: true },
+    { name: 'EventSource', minWidth: 100, maxWidth: 300, displayName: 'EventSource ', sorting: true, isResizable: true },
+    { name: 'ListId', minWidth: 100, maxWidth: 300, displayName: 'ListId ', sorting: true, isResizable: true },
+    { name: 'ListItemUniqueId', minWidth: 100, maxWidth: 300, displayName: ' ', sorting: true, isResizable: true },
+    { name: 'Site', minWidth: 100, maxWidth: 300, displayName: 'Site ', sorting: true, isResizable: true },
+    { name: 'WebId', minWidth: 100, maxWidth: 300, displayName: 'WebId  ', sorting: true, isResizable: true },
+    { name: 'SourceFileExtension', minWidth: 100, maxWidth: 300, displayName: 'SourceFileExtension  ', sorting: true, isResizable: true },
+    { name: 'HighPriorityMediaProcessing', minWidth: 100, maxWidth: 300, displayName: 'HighPriorityMediaProcessing  ', sorting: true, isResizable: true },
+    { name: 'DoNotDistributeEvent', minWidth: 100, maxWidth: 300, displayName: 'DoNotDistributeEvent  ', sorting: true, isResizable: true },
+    { name: 'IsDocLib', minWidth: 200, maxWidth: 100, displayName: 'IsDocLib  ', sorting: true, isResizable: true },
 
 
   ];
@@ -161,10 +164,17 @@ export const AvailableContent: React.FunctionComponent = () => {
 
       <ListView items={callbackItems.data} viewFields={viewFieldsCallbackItems}></ListView>
 
-      <Panel type={PanelType.extraLarge} headerText="Audit Items" isOpen={mode === "showselected"} onDismiss={(e) => {
-        setMode("Display");
-      }} >
-        <ListView items={auditItems.data} viewFields={viewFieldsAuditItems}></ListView>
+      <Panel type={PanelType.extraLarge}
+        headerText="Audit Items"
+        isOpen={mode === "showselected"}
+        onDismiss={(e) => {
+          setMode("Display");
+        }} >
+        <ListView
+          items={auditItems.data}
+          viewFields={viewFieldsAuditItems}
+        //  stickyHeader={true}
+        ></ListView>
       </Panel>
     </div>
   );
