@@ -32,7 +32,7 @@ export const Captures: React.FunctionComponent = () => {
     const [selectedItem, setSelectedItem] = useState<SiteToCapture>(null);
     const viewFields: IViewField[] = [
         {
-            name: 'actions', displayName: 'Actions', render: (item?: any, index?: number) => {
+            name: 'actions', displayName: 'Actions', minWidth: 50, maxWidth: 50, isResizable: true, render: (item?: any, index?: number) => {
                 return <div>
                     <i className={getIconClassName('Edit')} onClick={(e) => {
                         setMode("Edit");
@@ -53,14 +53,14 @@ export const Captures: React.FunctionComponent = () => {
             }
         },
         {
-            name: 'siteUrl', minWidth: 250, maxWidth: 90, displayName: 'Site Url', sorting: true, isResizable: true, render: (item?: any, index?: number) => {
+            name: 'siteUrl', minWidth: 300, maxWidth: 700, linkPropertyName: 'siteUrl', displayName: 'Site Url', sorting: true, isResizable: true, render: (item?: any, index?: number) => {
                 return decodeURIComponent(item.siteUrl);
             }
         },
-        { name: 'siteId', minWidth: 136, maxWidth: 90, displayName: 'Site Id', sorting: true, isResizable: true },
-        { name: 'eventsToCapture', minWidth: 200, maxWidth: 90, displayName: 'Events to Capture', sorting: true, isResizable: true },
-        { name: 'captureToListId', minWidth: 136, maxWidth: 90, displayName: 'Capture To List Id', sorting: true, isResizable: true },
-        { name: 'captureToSiteId', minWidth: 136, maxWidth: 90, displayName: 'Capture To Site Id', sorting: true, isResizable: true },
+        { name: 'siteId', minWidth: 50, maxWidth: 250, displayName: 'Site Id', sorting: true, isResizable: true },
+        { name: 'eventsToCapture', minWidth: 200, maxWidth: 800, displayName: 'Events to Capture', sorting: true, isResizable: true },
+        { name: 'captureToListId', minWidth: 50, maxWidth: 200, displayName: 'Capture To List Id', sorting: true, isResizable: true },
+        { name: 'captureToSiteId', minWidth: 50, maxWidth: 200, displayName: 'Capture To Site Id', sorting: true, isResizable: true },
     ];
     return (
         <div>

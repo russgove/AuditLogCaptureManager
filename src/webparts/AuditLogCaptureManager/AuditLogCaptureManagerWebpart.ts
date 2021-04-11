@@ -10,7 +10,7 @@ import * as ReactDom from 'react-dom';
 import { QueryClient, QueryClientProvider, useQuery } from 'react-query';
 import AuditLogCaptureManager from './components/AuditLogCaptureManager';
 import { IAuditLogCaptureManagerProps } from './components/IAuditLogCaptureManagerProps';
-
+import { initializeIcons } from 'office-ui-fabric-react';
 const LOG_SOURCE: string = 'AuditLogCaptureMananger';
 export interface IAuditLogCaptureManagerWebPartProps {
   managementApiUrl: string;
@@ -24,6 +24,7 @@ export default class AuditLogCaptureManagerWebPart extends BaseClientSideWebPart
     Log.info(LOG_SOURCE, 'Initialized TrondocsCommandsCommandSet');
 
     return super.onInit().then(_ => {
+      initializeIcons();
       sp.setup({
         spfxContext: this.context,
         // defaultCachingStore: "session", // or "local"

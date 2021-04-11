@@ -41,15 +41,13 @@ export default class AuditLogCaptureManager extends React.Component<IAuditLogCap
     return (
       <div className={styles.AuditLogCaptureManager}>
         <QueryClientProvider client={this.props.queryClient}>
-          <ReactQueryDevtools initialIsOpen={true} />
+          <ReactQueryDevtools initialIsOpen={true} position='bottom-right' />
           <CutomPropertyContext.Provider value={this.props}>
             <Toolbar
-
               actionGroups={{
                 'group1': {
                   'Captures': {
                     title: 'Captures',
-
                     iconName: 'Edit',
                     onClick: () => {
                       this.setState((current) => ({ ...current, currentAction: "Captures" }));
