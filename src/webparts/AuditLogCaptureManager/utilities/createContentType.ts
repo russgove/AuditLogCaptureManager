@@ -26,6 +26,7 @@ export async function createContentType(siteUrl: string): Promise<void> {
   context.load(itemContentType);
   await executeQuery(context)
     .catch((err) => {
+      console.log(err);
       debugger;
     });
   var contentTypeCreationInformation = new SP.ContentTypeCreationInformation();
@@ -33,15 +34,10 @@ export async function createContentType(siteUrl: string): Promise<void> {
   contentTypeCreationInformation.set_description("Microsoft 365 SharePoint Audit Capture detail record");
   contentTypeCreationInformation.set_parentContentType(itemContentType);
   var newContentType: SP.ContentType = context.get_site().get_rootWeb().get_contentTypes().add(contentTypeCreationInformation);
-  context.load(newContentType);
-  await executeQuery(context)
-    .catch((err) => {
-      debugger;
-    });
   await addFields(context, newContentType);
   await executeQuery(context)
     .catch((err) => {
-      debugger;
+      console.log(err);
     });
 
 }
