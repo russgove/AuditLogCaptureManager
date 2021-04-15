@@ -1,3 +1,6 @@
+import { AuditItem, CallbackItem, Subscription } from '../../model/Model';
+import { fetchAZFunc } from '../../utilities/fetchApi';
+import { CutomPropertyContext } from '../AuditLogCaptureManager';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { IViewField, ListView } from '@pnp/spfx-controls-react/lib/controls/listView';
 import { getIconClassName } from '@uifabric/styling';
@@ -10,10 +13,6 @@ import * as React from 'react';
 import { useState } from 'react';
 import { useQuery } from 'react-query';
 
-import { AuditItem, CallbackItem, Subscription } from '../../model/Model';
-import { fetchAZFunc } from '../../utilities/fetchApi';
-import { CutomPropertyContext } from '../AuditLogCaptureManager';
-
 const parentContext: any = React.useContext<any>(CutomPropertyContext);
 export interface CallbackItemECBProps {
   callbackItem: CallbackItem;
@@ -25,7 +24,7 @@ export const CallbackItemECB: React.FunctionComponent<CallbackItemECBProps> = (p
     const url = `${parentContext.managementApiUrl}/api/EnqueueCallbackItems`;
     await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify([this]));//make it an array
     alert(`1 files where queued`);
-  }
+  };
 
   const [panelOpen, setPanelOpen] = useState<boolean>(false);
   return (

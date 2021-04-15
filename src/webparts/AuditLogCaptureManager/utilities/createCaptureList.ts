@@ -1,20 +1,34 @@
 import { AadHttpClient, HttpClientResponse } from '@microsoft/sp-http';
 import { sp } from "@pnp/sp";
-import { ContentTypes, IContentTypes } from "@pnp/sp/content-types";
+import { ContentTypes, IContentType, IContentTypes } from "@pnp/sp/content-types";
 import { Fields, FieldTypes } from "@pnp/sp/fields";
 import { ILists, Lists } from "@pnp/sp/lists";
 import { IContextInfo, ISite, Site } from "@pnp/sp/sites";
 import { IWebs, Web, Webs } from "@pnp/sp/webs";
 
+import { createContentType } from './createContentType';
+
 import "@pnp/sp/presets/all";
 import "@pnp/sp/sites";
 
 export async function createCaptureList(client: AadHttpClient, siteUrl: string, listName: string, managementApiUrl: string): Promise<any> {
-    debugger;
+
     try {
         var url: string = decodeURIComponent(siteUrl);
         var rootweb = Web(url);
+        const ct: IContentType = await rootweb.contentTypes.getById("0x0100002cf808dcf34fdfbaf1378b8bcaa777").get();
 
+        if (ct["odata.null"]) {
+
+            try {
+                var kgd = await createContentType(siteUrl);
+            }
+            catch (err) {
+                console.log(err);
+                debugger;
+            }
+            //Common  schema }
+        }
         // await rootweb.lists.filter(`Title eq '${listName}'`).get()
         //     .then((results) => {
         //         debugger;
@@ -24,14 +38,10 @@ export async function createCaptureList(client: AadHttpClient, siteUrl: string, 
         //     })
 
 
-        debugger;
+
         const newList = await rootweb.lists.add(listName, "Audit Data", 100, true);
-        debugger;
-        // const ct = await rootweb.contentTypes.getById("0x0100002cf808dcf34fdfbaf1378b8bcaa777").get();
-        // debugger;
-        // if (!ct) {
-        //var batch = sp.createBatch();
-        //Common  schema 
+
+
         await newList.list.fields.add("AuditItemId", "SP.FieldText", { Description: "Unique identifier of an audit record.", FieldTypeKind: 3, Group: "Audit Capture" });
         await newList.list.fields.add("CorrelationId", "SP.FieldText", { Description: "", FieldTypeKind: 3, Group: "Audit Capture" });
         await newList.list.fields.add("ListId", "SP.FieldText", { Description: "", FieldTypeKind: 3, Group: "Audit Capture" });
@@ -55,14 +65,14 @@ export async function createCaptureList(client: AadHttpClient, siteUrl: string, 
 
         //SharePoint Base schema
         await newList.list.fields.add("Site", "SP.FieldText", { Description: "The GUID of the site where the file or folder accessed by the user is located.", FieldTypeKind: 3, Group: "Audit Capture" });
-        debugger;
-        await newList.list.fields.add("ItemType", "SP.FieldText", { Description: "The type of object that was accessed or modified. See the ItemType table for details on the types of objects.", FieldTypeKind: 3, Group: "Audit Capture" }); debugger; debugger;
-        await newList.list.fields.add("EventSource", "SP.FieldText", { Description: "Identifies that an event occurred in SharePoint. Possible values are SharePoint or ObjectModel.", FieldTypeKind: 3, Group: "Audit Capture" }); debugger;
-        await newList.list.fields.add("SourceName", "SP.FieldText", { Description: "The entity that triggered the audited operation. Possible values are SharePoint or ObjectModel.", FieldTypeKind: 3, Group: "Audit Capture" }); debugger;
-        await newList.list.fields.add("UserAgent", "SP.FieldText", { Description: "Information about the user's client or browser. This information is provided by the client or browser.", FieldTypeKind: 3, Group: "Audit Capture" }); debugger;
-        await newList.list.fields.add("MachineDomainInfo", "SP.FieldText", { Description: "Information about device sync operations. This information is reported only if it's present in the request.", FieldTypeKind: 3, Group: "Audit Capture" }); debugger;
-        await newList.list.fields.add("MachineId", "SP.FieldText", { Description: "Information about device sync operations. This information is reported only if it's present in the request.", FieldTypeKind: 3, Group: "Audit Capture" }); debugger;
-        await newList.list.fields.add("CreationTime", "SP.FieldText", { Description: "The date and time in Coordinated Universal Time (UTC) when the user performed the activity.", FieldTypeKind: 3, Group: "Audit Capture" }); debugger;
+
+        await newList.list.fields.add("ItemType", "SP.FieldText", { Description: "The type of object that was accessed or modified. See the ItemType table for details on the types of objects.", FieldTypeKind: 3, Group: "Audit Capture" });
+        await newList.list.fields.add("EventSource", "SP.FieldText", { Description: "Identifies that an event occurred in SharePoint. Possible values are SharePoint or ObjectModel.", FieldTypeKind: 3, Group: "Audit Capture" });
+        await newList.list.fields.add("SourceName", "SP.FieldText", { Description: "The entity that triggered the audited operation. Possible values are SharePoint or ObjectModel.", FieldTypeKind: 3, Group: "Audit Capture" });
+        await newList.list.fields.add("UserAgent", "SP.FieldText", { Description: "Information about the user's client or browser. This information is provided by the client or browser.", FieldTypeKind: 3, Group: "Audit Capture" });
+        await newList.list.fields.add("MachineDomainInfo", "SP.FieldText", { Description: "Information about device sync operations. This information is reported only if it's present in the request.", FieldTypeKind: 3, Group: "Audit Capture" });
+        await newList.list.fields.add("MachineId", "SP.FieldText", { Description: "Information about device sync operations. This information is reported only if it's present in the request.", FieldTypeKind: 3, Group: "Audit Capture" });
+        await newList.list.fields.add("CreationTime", "SP.FieldText", { Description: "The date and time in Coordinated Universal Time (UTC) when the user performed the activity.", FieldTypeKind: 3, Group: "Audit Capture" });
 
 
 
@@ -88,11 +98,11 @@ export async function createCaptureList(client: AadHttpClient, siteUrl: string, 
         await newList.list.fields.add("ModifiedProperties", "SP.FieldText", { Description: "Optional payload for custom events.", FieldTypeKind: 3, Group: "Audit Capture" });
         await newList.list.fields.add("SiteUrl", "SP.FieldText", { Description: "The property is included for admin events, such as adding a user as a member of a site or a site collection admin group. The property includes the name of the property that was modified (for example, the Site Admin group), the new value of the modified property (such the user who was added as a site admin), and the previous value of the modified object.", FieldTypeKind: 3, Group: "Audit Capture" });
         // }
-        debugger;
+
         //  const xx = await batch.execute();
-        debugger;
+
         const list = await newList.list.get();
-        debugger;
+
         return list.Id;
     }
     catch (ee) {

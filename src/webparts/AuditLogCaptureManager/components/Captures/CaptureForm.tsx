@@ -35,14 +35,14 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
     });
     const [item, setItem] = useState<SiteToCapture>(props.siteToCapture);
     const siteLookup = useQuery<any>(['siteLookup', item.siteUrl], (x) => {
-        debugger;
+
         setErrorMessage("");
         return getSite(item.siteUrl);
     }, {
         refetchOnWindowFocus: false,
         enabled: false, // turned off by default, manual refetch is needed
         onSuccess: (response) => {
-            debugger;
+
             setItem((temp) => ({
                 ...temp,
                 siteId: response.Id,
@@ -54,12 +54,12 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
         })
     });
     const listLookup = useQuery<any>(['listLookup', item.captureToListId], (x) => {
-        debugger;
+
         setErrorMessage("");
         return getList(item.siteUrl, item.captureToListId);
     }, {
         onSuccess: (response) => {
-            debugger;
+
             setList(response);
         }
         , onError: ((err: any) => {
@@ -76,7 +76,7 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
                     setItem((temp) => ({ ...temp, siteUrl: newValue }));
                 }}
                 onBlur={async () => {
-                    debugger;
+
                     siteLookup.refetch();
 
                 }}
@@ -114,9 +114,7 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
             <TextField label="New Capture To List" value={newListName} onChange={(e, newValue) => {
                 setnewListName(newValue);
             }}></TextField>
-            <TextField label="Capture To List" value={newListName} onChange={(e, newValue) => {
-                setnewListName(newValue);
-            }}></TextField>
+
             <IconButton iconProps={{ iconName: "NewFolder" }} text="Crate" label="DDDD" onClick={(async (e) => {
                 debugger;
                 var listId = await createCaptureList(parentContext.aadHttpClient, item.siteUrl, newListName, parentContext.managementApiUrl);
@@ -132,7 +130,7 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
             <div>
                 <PrimaryButton disabled={!item.siteId || !item.siteUrl || !item.eventsToCapture || !item.captureToListId || !item.captureToSiteId} onClick={async (e) => {
                     try {
-                        debugger;
+
                         saveSiteToCapture.mutateAsync(item)
                             .then(() => {
                                 setErrorMessage("");

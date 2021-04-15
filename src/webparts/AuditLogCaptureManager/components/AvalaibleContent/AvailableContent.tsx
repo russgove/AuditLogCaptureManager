@@ -31,7 +31,7 @@ export const AvailableContent: React.FunctionComponent = () => {
   const auditItems = useQuery<AuditItem[]>(['audititems', selectedCallbackItem], () => {
     debugger;
     const url = `${parentContext.managementApiUrl}/api/FetchAvailableContentItem?contentUri=${encodeURIComponent(selectedCallbackItem.contentUri)}`;
-    console.log(url)
+    console.log(url);
     return fetchAZFunc(parentContext.aadHttpClient, url, "GET");
   },
     { refetchOnWindowFocus: false, enabled: true });
@@ -46,7 +46,7 @@ export const AvailableContent: React.FunctionComponent = () => {
     // const selected = [item];
     // await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(selected));
     // alert(`${selected.length} files where queued`);
-  }
+  };
   const viewFieldsCallbackItems: IViewField[] = [
     {
       name: 'actions', minWidth: 50, maxWidth: 50, displayName: 'Actions', render: (item?: any, index?: number) => {
@@ -106,7 +106,7 @@ export const AvailableContent: React.FunctionComponent = () => {
           &nbsp;&nbsp;    &nbsp;&nbsp;    &nbsp;&nbsp;
           <i className={getIconClassName('View')} onClick={async (e) => {
             setSelectedCallbackItem(item);
-            setMode("showselected")
+            setMode("showselected");
             auditItems.refetch();
           }}></i>
         </div>;
