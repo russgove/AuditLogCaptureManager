@@ -1,24 +1,8 @@
-import { escape, find, findIndex } from '@microsoft/sp-lodash-subset';
-import { sp, SPHttpClient } from "@pnp/sp";
-import { IItem } from "@pnp/sp/items";
-import { IRoleDefinition, IRoleDefinitionInfo } from '@pnp/sp/security';
-import { ISiteGroup, ISiteGroupInfo } from '@pnp/sp/site-groups';
-import { IViewInfo } from '@pnp/sp/views';
-import { autobind } from 'office-ui-fabric-react/lib/Utilities';
-
 // ** CSOM STUFF
-
 require('sp-init');
 require('microsoft-ajax');
 require('sp-runtime');
 require('sharepoint');
-
-
-/**
-    * Sets the parent of a group to another group using JSOM calls (this is not supported in rest)
-    * @param groupId -- the ID of the group whose parent will be changed
-    * @param ownerGroupId -- the id of the group that will become the parent
-    */
 export async function createContentType(siteUrl: string): Promise<void> {
 
   const context: SP.ClientContext = new SP.ClientContext(decodeURIComponent(siteUrl));
@@ -29,11 +13,15 @@ export async function createContentType(siteUrl: string): Promise<void> {
       console.log(err);
       debugger;
     });
+
+
   var contentTypeCreationInformation = new SP.ContentTypeCreationInformation();
   contentTypeCreationInformation.set_name("Audit Item");
   contentTypeCreationInformation.set_description("Microsoft 365 SharePoint Audit Capture detail record");
   contentTypeCreationInformation.set_parentContentType(itemContentType);
-  var newContentType: SP.ContentType = context.get_site().get_rootWeb().get_contentTypes().add(contentTypeCreationInformation);
+
+  var newContentType: SP.ContentType = context.get_site().get_rootWeb().get_contentTypes()
+    .add({ ...contentTypeCreationInformation, ID: "0x01" });
   await addFields(context, newContentType);
   await executeQuery(context)
     .catch((err) => {

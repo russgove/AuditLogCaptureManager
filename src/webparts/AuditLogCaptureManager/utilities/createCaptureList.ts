@@ -16,7 +16,7 @@ export async function createCaptureList(client: AadHttpClient, siteUrl: string, 
     try {
         var url: string = decodeURIComponent(siteUrl);
         var rootweb = Web(url);
-        const ct: IContentType = await rootweb.contentTypes.getById("0x0100002cf808dcf34fdfbaf1378b8bcaa777").get();
+        const ct: IContentType = await rootweb.contentTypes.g("0x0100002cf808dcf34fdfbaf1378b8bcaa777").get();
 
         if (ct["odata.null"]) {
 
