@@ -21,7 +21,7 @@ export async function createContentType(siteUrl: string): Promise<void> {
   contentTypeCreationInformation.set_parentContentType(itemContentType);
 
   var newContentType: SP.ContentType = context.get_site().get_rootWeb().get_contentTypes()
-    .add({ ...contentTypeCreationInformation, ID: "0x01" });
+    .add(contentTypeCreationInformation);
   await addFields(context, newContentType);
   await executeQuery(context)
     .catch((err) => {

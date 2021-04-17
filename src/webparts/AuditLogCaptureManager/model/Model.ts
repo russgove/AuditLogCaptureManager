@@ -9,6 +9,25 @@ export class CallbackItem {
     public contentUri: string;
     public tenantId: string;
 }
+
+export class Notification {
+    public contentExpireation: string;
+    public contentCreated: string;
+    public contentId: string;
+
+    public contentType: string;
+    public contentUri: string;
+
+    public notificationSent: string;
+    public notificationStatus: string;
+
+}
+export class CrawledCallbackItem {
+    public dateCrawled: string;
+    public triggeredBy: string;
+    public callbackItem: CallbackItem;
+
+}
 export class Subscription {
     public contentType: string;
     public status: string;

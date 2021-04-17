@@ -5,6 +5,9 @@ import { ReactQueryDevtools } from 'react-query/devtools';
 
 import styles from './AuditLogCaptureManager.module.scss';
 import { AvailableContent } from './AvalaibleContent/AvailableContent';
+
+import { CrawledContent } from './CrawledContent/CrawledContent';
+import { Notifications } from './Notifications/Notifications';
 import { Captures } from './Captures/Captures';
 import { IAuditLogCaptureManagerProps } from './IAuditLogCaptureManagerProps';
 import { IAuditLogCaptureManagerState } from './IAuditLogCaptureManagerState';
@@ -31,6 +34,12 @@ export default class AuditLogCaptureManager extends React.Component<IAuditLogCap
       case "AvailableContent":
         content = <AvailableContent></AvailableContent>;
         break;
+      case "CrawledContent":
+        content = <CrawledContent></CrawledContent>;
+        break;
+      case "Notifications":
+        content = <Notifications></Notifications>;
+        break;
       default:
         content = <div>no action selected</div>;
     }
@@ -44,24 +53,38 @@ export default class AuditLogCaptureManager extends React.Component<IAuditLogCap
               actionGroups={{
                 'group1': {
                   'Captures': {
-                    title: 'Captures',
+                    title: '  Captures',
                     iconName: 'Edit',
                     onClick: () => {
                       this.setState((current) => ({ ...current, currentAction: "Captures" }));
                     }
                   },
                   'Subscriptions': {
-                    title: 'Subscriptions',
+                    title: '  Subscriptions',
                     iconName: 'Add',
                     onClick: () => {
                       this.setState((current) => ({ ...current, currentAction: "Subscriptions" }));
                     }
                   },
                   'AvailableContent': {
-                    title: 'AvailableContent',
+                    title: '  Available Content',
                     iconName: 'AddReaction',
                     onClick: () => {
                       this.setState((current) => ({ ...current, currentAction: "AvailableContent" }));
+                    }
+                  },
+                  'CrawledContent': {
+                    title: '  Crawled Content',
+                    iconName: 'AddReaction',
+                    onClick: () => {
+                      this.setState((current) => ({ ...current, currentAction: "CrawledContent" }));
+                    }
+                  },
+                  'Notifications': {
+                    title: '  Notifications',
+                    iconName: 'AddReaction',
+                    onClick: () => {
+                      this.setState((current) => ({ ...current, currentAction: "Notifications" }));
                     }
                   }
                 }
