@@ -7,8 +7,12 @@ import { ContextualMenuItemType } from 'office-ui-fabric-react/lib/ContextualMen
 import { DatePicker } from 'office-ui-fabric-react/lib/DatePicker';
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useQuery } from 'react-query';
+
+import { renderDate } from '../../utilities/renderDate';
+
+import { DateFormatPicker } from '../DateFormatPicker';
 
 import { AuditItem, CallbackItem, CrawledCallbackItem } from '../../model/Model';
 import { fetchAZFunc } from '../../utilities/fetchApi';
@@ -16,6 +20,8 @@ import { CutomPropertyContext } from '../AuditLogCaptureManager';
 
 export const ListItemsWebPartContext = React.createContext<WebPartContext>(null);
 export const CrawledContent: React.FunctionComponent = () => {
+  const selectedDateFormat = useRef<string>('Local');
+
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const crawledCallbackItems = useQuery<CrawledCallbackItem[]>('crawledcallbackitems', () => {
     const url = `${parentContext.managementApiUrl}/api/ListCrawledContent/${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()}`;
@@ -28,7 +34,7 @@ export const CrawledContent: React.FunctionComponent = () => {
 
   const [selectedCrawledCallbackItem, setSelectedCrawledCallbackItem] = useState<CrawledCallbackItem>(null);
   const auditItems = useQuery<AuditItem[]>(['audititems', selectedCrawledCallbackItem], () => {
-    debugger;
+
     const url = `${parentContext.managementApiUrl}/api/FetchAvailableContentItem?contentUri=${encodeURIComponent(selectedCrawledCallbackItem.callbackItem.contentUri)}`;
     console.log(url);
     return fetchAZFunc(parentContext.aadHttpClient, url, "GET");
@@ -37,17 +43,17 @@ export const CrawledContent: React.FunctionComponent = () => {
 
   const parentContext: any = React.useContext<any>(CutomPropertyContext);
   const [mode, setMode] = useState<string>("display");
-  const viewCallback = async (item: CallbackItem) => {
-    debugger;
+  // const viewCallback = async (item: CallbackItem) => {
+  //   debugger;
 
-  };
+  // };
   const viewFieldsCrawledCallbackItems: IViewField[] = [
     {
       name: 'actions', minWidth: 50, maxWidth: 50, displayName: 'Actions', render: (item?: any, index?: number) => {
         return <div>
           <i className={getIconClassName('Redo')}
             onClick={async (e) => {
-              debugger;
+
               const url = `${parentContext.managementApiUrl}/api/EnqueueCallbackItems`;
               const selected = [item];
               await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(selected));
@@ -55,7 +61,7 @@ export const CrawledContent: React.FunctionComponent = () => {
             }}></i>
           &nbsp;&nbsp;    &nbsp;&nbsp;    &nbsp;&nbsp;
           <i className={getIconClassName('View')} onClick={(e) => {
-            debugger;
+
             setSelectedCrawledCallbackItem(item);
             setMode("showselected");
 
@@ -94,7 +100,7 @@ export const CrawledContent: React.FunctionComponent = () => {
       name: 'actions', minWidth: 50, maxWidth: 50, displayName: 'Actions', render: (item?: any, index?: number) => {
         return <div>
           <i className={getIconClassName('Redo')} onClick={async (e) => {
-            debugger;
+
             const url = `${parentContext.managementApiUrl}/api/EnqueueCallbackItems`;
             const selected = [item];
             await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(selected));
@@ -109,7 +115,10 @@ export const CrawledContent: React.FunctionComponent = () => {
         </div>;
       }
     },
-    { name: 'CreationTime', minWidth: 150, maxWidth: 300, displayName: 'CreationTime ', sorting: true, isResizable: true },
+    {
+      name: 'CreationTime', minWidth: 150, maxWidth: 300, displayName: 'CreationTime ', sorting: true,
+      render: renderDate(selectedDateFormat.current), isResizable: true
+    },
     { name: 'UserId', minWidth: 300, maxWidth: 300, displayName: 'UserId ', sorting: true, isResizable: true },
     { name: 'Operation', minWidth: 100, maxWidth: 100, displayName: 'Operation ', sorting: true, isResizable: true },
     { name: 'ClientIP', minWidth: 100, maxWidth: 200, displayName: 'ClientIP ', sorting: true, isResizable: true },
@@ -154,11 +163,10 @@ export const CrawledContent: React.FunctionComponent = () => {
         }}></DatePicker>
       <PrimaryButton disabled={!selectedDate || crawledCallbackItems.isFetching}
         onClick={async (e) => {
-          debugger;
           crawledCallbackItems.refetch();
 
         }}>Get Crawled Content</PrimaryButton>
-
+      <DateFormatPicker selectedDateFormat={selectedDateFormat}></DateFormatPicker>
       <ListView items={crawledCallbackItems.data} viewFields={viewFieldsCrawledCallbackItems}></ListView>
 
       <Panel type={PanelType.extraLarge}
