@@ -32,18 +32,18 @@ export const Notifications: React.FunctionComponent = () => {
       name: 'notificationSent', minWidth: 100, maxWidth: 200, displayName: 'Notification Sent', sorting: true,
       render: renderDate(selectedDateFormat.current), isResizable: true
     },
-    { name: 'notificationStatus', minWidth: 100, maxWidth: 200, displayName: 'Status', sorting: true, isResizable: true },
-    { name: 'contentType', minWidth: 100, maxWidth: 200, displayName: 'Content Type', sorting: true, isResizable: true },
+    { name: 'notificationStatus', minWidth: 50, maxWidth: 100, displayName: 'Status', sorting: true, isResizable: true },
+    { name: 'contentType', minWidth: 75, maxWidth: 200, displayName: 'Content Type', sorting: true, isResizable: true },
     {
-      name: 'contentCreated', minWidth: 80, maxWidth: 120, displayName: 'Content Created', sorting: true,
+      name: 'contentCreated', minWidth: 100, maxWidth: 120, displayName: 'Content Created', sorting: true,
       render: renderDate(selectedDateFormat.current), isResizable: true
     },
     {
-      name: 'contentExpiration', minWidth: 80, maxWidth: 120, displayName: 'Expires', sorting: true,
+      name: 'contentExpiration', minWidth: 100, maxWidth: 120, displayName: 'Expires', sorting: true,
       render: renderDate(selectedDateFormat.current), isResizable: true
     },
-    { name: 'contentUri', minWidth: 40, maxWidth: 500, displayName: 'Content Uri', sorting: true, isResizable: true },
     { name: 'contentId', minWidth: 40, maxWidth: 300, displayName: 'ID', sorting: true, isResizable: true },
+    { name: 'contentUri', minWidth: 40, maxWidth: 500, displayName: 'Content Uri', sorting: true, isResizable: true },
 
 
   ];

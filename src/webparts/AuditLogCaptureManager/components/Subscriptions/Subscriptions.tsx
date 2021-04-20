@@ -42,7 +42,7 @@ export const Subscriptions: React.FunctionComponent = () => {
   ];
   return (
     <div>
-      Subscriptions {mode}
+      Subscriptions
       <ListView items={subscriptions.data} viewFields={viewFields}></ListView>
       <Panel type={PanelType.smallFixedFar} headerText="Edit Subscription" isOpen={mode === "Edit"} onDismiss={(e) => {
         setMode("Display");

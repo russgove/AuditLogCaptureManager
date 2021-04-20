@@ -1,35 +1,42 @@
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { IViewField, ListView } from '@pnp/spfx-controls-react/lib/controls/listView';
 import { getIconClassName } from '@uifabric/styling';
-import { IButtonProps, IconButton, Layer } from 'office-ui-fabric-react';
 import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
+import { ChoiceGroup, IChoiceGroupOption } from 'office-ui-fabric-react/lib/ChoiceGroup';
 import { ContextualMenuItemType } from 'office-ui-fabric-react/lib/ContextualMenu';
 import { DatePicker } from 'office-ui-fabric-react/lib/DatePicker';
+import { IColumn } from 'office-ui-fabric-react/lib/DetailsList';
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import * as React from 'react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useQuery } from 'react-query';
 
-import { AuditItem, CallbackItem, Subscription } from '../../model/Model';
+import { renderDate } from '../../utilities/renderDate';
+import { AuditItem, CallbackItem } from '../../model/Model';
 import { fetchAZFunc } from '../../utilities/fetchApi';
+
+import { DateFormatPicker } from '../DateFormatPicker';
 import { CutomPropertyContext } from '../AuditLogCaptureManager';
 import { CallbackItemECB, CallbackItemECBProps } from './CallbackItemECB';
 
 export const ListItemsWebPartContext = React.createContext<WebPartContext>(null);
 export const AvailableContent: React.FunctionComponent = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+
+  const selectedDateFormat = useRef<string>('Local');
+
   const callbackItems = useQuery<CallbackItem[]>('callbackitems', () => {
-    const url = `${parentContext.managementApiUrl}/api/ListAvailableContent/${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()}`;
+    var now = new Date();
+    const url = `${parentContext.managementApiUrl}/api/ListAvailableContent/${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()}T${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
     return fetchAZFunc(parentContext.aadHttpClient, url, "GET");
   },
     { refetchOnWindowFocus: false, enabled: false }
   );
 
-
-
   const [selectedCallbackItem, setSelectedCallbackItem] = useState<CallbackItem>(null);
   const auditItems = useQuery<AuditItem[]>(['audititems', selectedCallbackItem], () => {
-    debugger;
+
+
     const url = `${parentContext.managementApiUrl}/api/FetchAvailableContentItem?contentUri=${encodeURIComponent(selectedCallbackItem.contentUri)}`;
     console.log(url);
     return fetchAZFunc(parentContext.aadHttpClient, url, "GET");
@@ -38,22 +45,14 @@ export const AvailableContent: React.FunctionComponent = () => {
 
   const parentContext: any = React.useContext<any>(CutomPropertyContext);
   const [mode, setMode] = useState<string>("display");
-  const viewCallback = async (item: CallbackItem) => {
-    debugger;
 
-    // // CANT DO THIS HERE, IT IS IN Anevent handler
-    // const url = `${parentContext.managementApiUrl}/api/EnqueueCallbackItems`;
-    // const selected = [item];
-    // await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(selected));
-    // alert(`${selected.length} files where queued`);
-  };
   const viewFieldsCallbackItems: IViewField[] = [
     {
       name: 'actions', minWidth: 50, maxWidth: 50, displayName: 'Actions', render: (item?: any, index?: number) => {
         return <div>
           <i className={getIconClassName('Redo')}
             onClick={async (e) => {
-              debugger;
+
               const url = `${parentContext.managementApiUrl}/api/EnqueueCallbackItems`;
               const selected = [item];
               await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(selected));
@@ -61,7 +60,7 @@ export const AvailableContent: React.FunctionComponent = () => {
             }}></i>
           &nbsp;&nbsp;    &nbsp;&nbsp;    &nbsp;&nbsp;
           <i className={getIconClassName('View')} onClick={(e) => {
-            debugger;
+
             setSelectedCallbackItem(item);
             setMode("showselected");
 
@@ -85,8 +84,14 @@ export const AvailableContent: React.FunctionComponent = () => {
     //     return element;
     //   }
     // },
-    { name: 'contentCreated', minWidth: 80, maxWidth: 120, displayName: 'Content Created', sorting: true, isResizable: true },
-    { name: 'contentExpiration', minWidth: 80, maxWidth: 120, displayName: 'Expires', sorting: true, isResizable: true },
+    {
+      name: 'contentCreated', minWidth: 80, maxWidth: 120, displayName: 'Content Created', sorting: true,
+      render: renderDate(selectedDateFormat.current), isResizable: true
+    },
+    {
+      name: 'contentExpiration', minWidth: 80, maxWidth: 120, displayName: 'Expires', sorting: true,
+      render: renderDate(selectedDateFormat.current), isResizable: true
+    },
     { name: 'contentUri', minWidth: 40, maxWidth: 500, displayName: 'Content Uri', sorting: true, isResizable: true },
     { name: 'contentId', minWidth: 40, maxWidth: 300, displayName: 'ID', sorting: true, isResizable: true },
 
@@ -97,7 +102,7 @@ export const AvailableContent: React.FunctionComponent = () => {
       name: 'actions', minWidth: 50, maxWidth: 50, displayName: 'Actions', render: (item?: any, index?: number) => {
         return <div>
           <i className={getIconClassName('Redo')} onClick={async (e) => {
-            debugger;
+
             const url = `${parentContext.managementApiUrl}/api/EnqueueCallbackItems`;
             const selected = [item];
             await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(selected));
@@ -112,7 +117,10 @@ export const AvailableContent: React.FunctionComponent = () => {
         </div>;
       }
     },
-    { name: 'CreationTime', minWidth: 150, maxWidth: 300, displayName: 'CreationTime ', sorting: true, isResizable: true },
+    {
+      name: 'CreationTime', minWidth: 150, maxWidth: 300, displayName: 'CreationTime ', sorting: true,
+      render: renderDate(selectedDateFormat.current), isResizable: true
+    },
     { name: 'UserId', minWidth: 300, maxWidth: 300, displayName: 'UserId ', sorting: true, isResizable: true },
     { name: 'Operation', minWidth: 100, maxWidth: 100, displayName: 'Operation ', sorting: true, isResizable: true },
     { name: 'ClientIP', minWidth: 100, maxWidth: 200, displayName: 'ClientIP ', sorting: true, isResizable: true },
@@ -148,20 +156,26 @@ export const AvailableContent: React.FunctionComponent = () => {
 
   ];
 
+
+
+
   return (
+
     <div>
-      AvailableContent {mode}
+      AvailableContent
       <DatePicker value={selectedDate}
         onSelectDate={(date) => {
           setSelectedDate(date);
         }}></DatePicker>
       <PrimaryButton disabled={!selectedDate || callbackItems.isFetching}
         onClick={async (e) => {
-          debugger;
+
           callbackItems.refetch();
 
         }}>Get Available Content</PrimaryButton>
 
+
+      <DateFormatPicker selectedDateFormat={selectedDateFormat}></DateFormatPicker>
       <ListView items={callbackItems.data} viewFields={viewFieldsCallbackItems}></ListView>
 
       <Panel type={PanelType.extraLarge}
