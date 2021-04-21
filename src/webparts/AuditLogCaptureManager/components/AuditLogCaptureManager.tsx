@@ -6,6 +6,7 @@ import { ReactQueryDevtools } from 'react-query/devtools';
 import styles from './AuditLogCaptureManager.module.scss';
 import { AvailableContent } from './AvalaibleContent/AvailableContent';
 
+import { DateFormatPicker } from './DateFormatPicker';
 import { CrawledContent } from './CrawledContent/CrawledContent';
 import { Notifications } from './Notifications/Notifications';
 import { Captures } from './Captures/Captures';
@@ -17,7 +18,10 @@ export const CutomPropertyContext: any = React.createContext<IAuditLogCaptureMan
 export default class AuditLogCaptureManager extends React.Component<IAuditLogCaptureManagerProps, IAuditLogCaptureManagerState> {
   public constructor(props: IAuditLogCaptureManagerProps) {
     super(props);
-    this.state = { currentAction: "Captures" };
+    this.state = {
+      currentAction: "Captures", selectedDateFormat: "Local", aadHttpClient: this.props.aadHttpClient,
+      managementApiUrl: this.props.managementApiUrl, queryClient: this.props.queryClient
+    };
   }
   public render(): React.ReactElement<IAuditLogCaptureManagerProps> {
     var content;
@@ -48,7 +52,7 @@ export default class AuditLogCaptureManager extends React.Component<IAuditLogCap
       <div className={styles.AuditLogCaptureManager}>
         <QueryClientProvider client={this.props.queryClient}>
           <ReactQueryDevtools initialIsOpen={true} position='bottom-right' />
-          <CutomPropertyContext.Provider value={this.props}>
+          <CutomPropertyContext.Provider value={this.state}>
             <Toolbar
               actionGroups={{
                 'group1': {
@@ -89,7 +93,10 @@ export default class AuditLogCaptureManager extends React.Component<IAuditLogCap
                   }
                 }
               }} />
-
+            <DateFormatPicker selectedDateFormat={this.state.selectedDateFormat}
+              onFormatChange={(e: string) => {
+                this.setState((current) => ({ ...current, selectedDateFormat: e }));
+              }}></DateFormatPicker>
             {content}
           </CutomPropertyContext.Provider>
         </QueryClientProvider>

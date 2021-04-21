@@ -8,23 +8,20 @@ import { DatePicker } from 'office-ui-fabric-react/lib/DatePicker';
 import { IColumn } from 'office-ui-fabric-react/lib/DetailsList';
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import * as React from 'react';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from 'react-query';
 
-import { renderDate } from '../../utilities/renderDate';
 import { AuditItem, CallbackItem } from '../../model/Model';
 import { fetchAZFunc } from '../../utilities/fetchApi';
-
-import { DateFormatPicker } from '../DateFormatPicker';
+import { renderDate } from '../../utilities/renderDate';
 import { CutomPropertyContext } from '../AuditLogCaptureManager';
+
+import { IAuditLogCaptureManagerState } from '../IAuditLogCaptureManagerState';
 import { CallbackItemECB, CallbackItemECBProps } from './CallbackItemECB';
 
 export const ListItemsWebPartContext = React.createContext<WebPartContext>(null);
 export const AvailableContent: React.FunctionComponent = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-
-  const selectedDateFormat = useRef<string>('Local');
-
   const callbackItems = useQuery<CallbackItem[]>('callbackitems', () => {
     var now = new Date();
     const url = `${parentContext.managementApiUrl}/api/ListAvailableContent/${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()}T${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
@@ -43,7 +40,7 @@ export const AvailableContent: React.FunctionComponent = () => {
   },
     { refetchOnWindowFocus: false, enabled: true });
 
-  const parentContext: any = React.useContext<any>(CutomPropertyContext);
+  const parentContext: IAuditLogCaptureManagerState = React.useContext<any>(CutomPropertyContext);
   const [mode, setMode] = useState<string>("display");
 
   const viewFieldsCallbackItems: IViewField[] = [
@@ -68,29 +65,14 @@ export const AvailableContent: React.FunctionComponent = () => {
         </div>;
       }
     },
-    { name: 'contentType', minWidth: 100, maxWidth: 200, displayName: 'Content Type', sorting: true, isResizable: true },
-    // {
-    //   name: "",
-    //   sorting: false,
-    //   maxWidth: 40,
-    //   render: (rowitem: CallbackItem) => {
-    //     const element: React.ReactElement<CallbackItemECBProps> = React.createElement(
-    //       CallbackItemECB,
-    //       {
-    //         callbackItem: rowitem,
-    //         viewCallback: viewCallback
-    //       }
-    //     );
-    //     return element;
-    //   }
-    // },
+    { name: 'contentType', minWidth: 75, maxWidth: 200, displayName: 'Content Type', sorting: true, isResizable: true },
     {
-      name: 'contentCreated', minWidth: 80, maxWidth: 120, displayName: 'Content Created', sorting: true,
-      render: renderDate(selectedDateFormat.current), isResizable: true
+      name: 'contentCreated', minWidth: 100, maxWidth: 200, displayName: 'Content Created', sorting: true,
+      render: renderDate(parentContext.selectedDateFormat), isResizable: true
     },
     {
-      name: 'contentExpiration', minWidth: 80, maxWidth: 120, displayName: 'Expires', sorting: true,
-      render: renderDate(selectedDateFormat.current), isResizable: true
+      name: 'contentExpiration', minWidth: 100, maxWidth: 200, displayName: 'Expires', sorting: true,
+      render: renderDate(parentContext.selectedDateFormat), isResizable: true
     },
     { name: 'contentUri', minWidth: 40, maxWidth: 500, displayName: 'Content Uri', sorting: true, isResizable: true },
     { name: 'contentId', minWidth: 40, maxWidth: 300, displayName: 'ID', sorting: true, isResizable: true },
@@ -119,7 +101,7 @@ export const AvailableContent: React.FunctionComponent = () => {
     },
     {
       name: 'CreationTime', minWidth: 150, maxWidth: 300, displayName: 'CreationTime ', sorting: true,
-      render: renderDate(selectedDateFormat.current), isResizable: true
+      render: renderDate(parentContext.selectedDateFormat), isResizable: true
     },
     { name: 'UserId', minWidth: 300, maxWidth: 300, displayName: 'UserId ', sorting: true, isResizable: true },
     { name: 'Operation', minWidth: 100, maxWidth: 100, displayName: 'Operation ', sorting: true, isResizable: true },
@@ -175,7 +157,7 @@ export const AvailableContent: React.FunctionComponent = () => {
         }}>Get Available Content</PrimaryButton>
 
 
-      <DateFormatPicker selectedDateFormat={selectedDateFormat}></DateFormatPicker>
+
       <ListView items={callbackItems.data} viewFields={viewFieldsCallbackItems}></ListView>
 
       <Panel type={PanelType.extraLarge}

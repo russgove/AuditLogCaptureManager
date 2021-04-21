@@ -1,5 +1,5 @@
 import { WebPartContext } from '@microsoft/sp-webpart-base';
-import { DefaultButton, IconButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
+import { IconButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { ComboBox, IComboBoxOption } from 'office-ui-fabric-react/lib/ComboBox';
 import { Label } from 'office-ui-fabric-react/lib/Label';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
@@ -7,7 +7,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 
-import { SharePointAuditOperations, SiteToCapture } from '../../model/Model';
+import { ISharePointAuditOperation, SharePointAuditOperations, SiteToCapture } from '../../model/Model';
 import { createCaptureList } from '../../utilities/createCaptureList';
 import { fetchAZFunc } from '../../utilities/fetchApi';
 import { getList } from '../../utilities/getList';
@@ -21,6 +21,7 @@ export interface ICaptureFormProps {
     cancel: (e: any) => void;
 }
 export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) => {
+
     const options: Array<IComboBoxOption> = SharePointAuditOperations.map((sao) => {
         return { key: sao.Operation, text: sao.Description };
     });
@@ -34,6 +35,16 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
         }
     });
     const [item, setItem] = useState<SiteToCapture>(props.siteToCapture);
+
+    const selectedOptions: Array<JSX.Element> = SharePointAuditOperations.filter((sao) => {
+        return item.eventsToCapture.indexOf(sao.Operation) != -1
+    })
+        .map((sao) => {
+            return (<div>
+                <b>{sao.Operation}</b>-- {sao.Description}
+            </div>)
+        });
+
     const siteLookup = useQuery<any>(['siteLookup', item.siteUrl], (x) => {
 
         setErrorMessage("");
@@ -53,9 +64,10 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
             setErrorMessage(err);
         })
     });
-    const listLookup = useQuery<any>(['listLookup', item.captureToListId], (x) => {
+    const listLookup = useQuery<any>(['listLookup', item.siteUrl, item.captureToListId], (x) => {
 
         setErrorMessage("");
+
         return getList(item.siteUrl, item.captureToListId);
     }, {
         onSuccess: (response) => {
@@ -81,36 +93,63 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
 
                 }}
             ></TextField>
-            <TextField label="Site ID" value={item.siteId}
+            <TextField label="Site Id" value={item.siteId} readOnly={true} borderless={true}
                 onChange={(e, newValue) => {
                     setItem((temp) => ({ ...temp, siteId: newValue }));
                 }}
             ></TextField>
 
-            <ComboBox label="Events To Capture" options={options} multiSelect={true}
+            <ComboBox label="Events To Capture" options={options} multiSelect
                 text={item.eventsToCapture}
+                onRenderOption={(option): JSX.Element => {
+                    return (
+                        <div>
+                            <b>{option.key}</b>--{option.text}
+                        </div>
+                    );
+                }}
+                selectedKey={item.eventsToCapture.split(";")}
                 dropdownWidth={800}
+                onSelect={(ev) => {
+                    console.log("OnSelect");
+                    console.log(ev);
+
+                }}
                 onChange={(e, newValue) => {
+
+
+                    console.log("onChange");
+                    console.log(e, newValue);
                     var events = item.eventsToCapture ? item.eventsToCapture.split(";") : [];
-                    events.push(newValue.key as string);
+                    if (newValue.selected) {
+                        events.push(newValue.key as string);
+                    } else {
+                        events = events.filter((e) => { return e !== newValue.key; });
+                    }
+                    console.log(`events are now  ${events.join(";")}`);
                     setItem((temp) => ({ ...temp, eventsToCapture: events.join(";") }));
+
 
                 }}
                 onResolveOptions={(e) => {
                     return e;
                 }}
             >
-
             </ComboBox>
-            <TextField label="Capture To Site Id" value={item.captureToSiteId} onChange={(e, newValue) => {
-                setItem((temp) => ({ ...temp, captureToSiteId: newValue }));
-            }}></TextField>
+            {selectedOptions}
+            <TextField label="Capture To Site Id" value={item.captureToSiteId} readOnly={true} borderless={true}
+            // onChange={(e, newValue) => {
+            //     setItem((temp) => ({ ...temp, captureToSiteId: newValue }));
+            // }}
+            ></TextField>
 
-            <TextField label="Capture To List Id" value={item.captureToListId} onChange={(e, newValue) => {
-                setItem((temp) => ({ ...temp, captureToListId: newValue }));
-            }}></TextField>
+            <TextField label="Capture To List Id" value={item.captureToListId} readOnly={true} borderless={true}
+            // onChange={(e, newValue) => {
+            //     setItem((temp) => ({ ...temp, captureToListId: newValue }));
+            // }}
+            ></TextField>
 
-            <TextField label="Capture To List" value={list ? list.Title : ""} ></TextField>
+            <TextField label="Capture To List" value={list ? list.Title : ""} readOnly={true} borderless={true}></TextField>
             <TextField label="New Capture To List" value={newListName} onChange={(e, newValue) => {
                 setnewListName(newValue);
             }}></TextField>
@@ -144,9 +183,9 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
                         setErrorMessage(err.message);
                     }
                 }}>Save</PrimaryButton>
-                <DefaultButton onClick={(e) => {
+                <PrimaryButton onClick={(e) => {
                     props.cancel(e);
-                }}>Cancel</DefaultButton>
+                }}>Cancel</PrimaryButton>
             </div>
 
         </div>

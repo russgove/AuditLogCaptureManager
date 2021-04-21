@@ -85,7 +85,11 @@ export class AuditItem {
 
 
 }
-export var SharePointAuditOperations = [
+export interface ISharePointAuditOperation {
+    Operation: string;
+    Description: string;
+}
+export var SharePointAuditOperations: Array<ISharePointAuditOperation> = [
     { Operation: "AccessInvitationAccepted", Description: "The recipient of an invitation to view or edit a shared file (or folder) has accessed the shared file by clicking on the link in the invitation." },
     { Operation: "AccessInvitationCreated", Description: "User sends an invitation to another person (inside or outside their organization) to view or edit a shared file or folder on a SharePoint or OneDrive for Business site. The details of the event entry identifies the name of the file that was shared, the user the invitation was sent to, and the type of the sharing permission selected by the person who sent the invitation." },
     { Operation: "AccessInvitationExpired", Description: "An invitation sent to an external user expires. By default, an invitation sent to a user outside of your organization expires after 7 days if the invitation isn't accepted." },

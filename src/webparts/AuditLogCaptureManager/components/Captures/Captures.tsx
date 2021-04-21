@@ -5,11 +5,12 @@ import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import * as React from 'react';
 import { useState } from 'react';
-import { useQuery, useMutation } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
 
 import { SiteToCapture } from '../../model/Model';
 import { fetchAZFunc } from '../../utilities/fetchApi';
 import { CutomPropertyContext } from '../AuditLogCaptureManager';
+import { IAuditLogCaptureManagerState } from '../IAuditLogCaptureManagerState';
 import { CaptureForm } from './CaptureForm';
 
 export const ListItemsWebPartContext = React.createContext<WebPartContext>(null);
@@ -27,7 +28,7 @@ export const Captures: React.FunctionComponent = () => {
             parentContext.queryClient.invalidateQueries('sitestocapture');
         }
     });
-    const parentContext: any = React.useContext<any>(CutomPropertyContext);
+    const parentContext: IAuditLogCaptureManagerState = React.useContext<IAuditLogCaptureManagerState>(CutomPropertyContext);
     const [mode, setMode] = useState<string>("");
     const [selectedItem, setSelectedItem] = useState<SiteToCapture>(null);
     const viewFields: IViewField[] = [
@@ -57,8 +58,9 @@ export const Captures: React.FunctionComponent = () => {
                 return decodeURIComponent(item.siteUrl);
             }
         },
-        { name: 'siteId', minWidth: 50, maxWidth: 250, displayName: 'Site Id', sorting: true, isResizable: true },
         { name: 'eventsToCapture', minWidth: 200, maxWidth: 800, displayName: 'Events to Capture', sorting: true, isResizable: true },
+
+        { name: 'siteId', minWidth: 50, maxWidth: 250, displayName: 'Site Id', sorting: true, isResizable: true },
         { name: 'captureToListId', minWidth: 50, maxWidth: 200, displayName: 'Capture To List Id', sorting: true, isResizable: true },
         { name: 'captureToSiteId', minWidth: 50, maxWidth: 200, displayName: 'Capture To Site Id', sorting: true, isResizable: true },
     ];

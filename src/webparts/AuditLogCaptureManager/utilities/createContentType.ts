@@ -3,7 +3,7 @@ require('sp-init');
 require('microsoft-ajax');
 require('sp-runtime');
 require('sharepoint');
-export async function createContentType(siteUrl: string): Promise<void> {
+export async function createContentType(siteUrl: string): Promise<string> {
 
   const context: SP.ClientContext = new SP.ClientContext(decodeURIComponent(siteUrl));
   var itemContentType = context.get_site().get_rootWeb().get_contentTypes().getById("0x01");
@@ -27,7 +27,7 @@ export async function createContentType(siteUrl: string): Promise<void> {
     .catch((err) => {
       console.log(err);
     });
-
+  return newContentType.get_stringId();
 }
 async function addFields(context: SP.ClientContext, newContentType: SP.ContentType) {
   await addTextField(context, newContentType, "CreationTime", "Creation Time", "The date and time in Coordinated Universal Time (UTC) when the user performed the activity.");

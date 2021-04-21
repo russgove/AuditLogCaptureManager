@@ -7,25 +7,31 @@ import { ContextualMenuItemType } from 'office-ui-fabric-react/lib/ContextualMen
 import { DatePicker } from 'office-ui-fabric-react/lib/DatePicker';
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import * as React from 'react';
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useQuery } from 'react-query';
-
-import { renderDate } from '../../utilities/renderDate';
-
-import { DateFormatPicker } from '../DateFormatPicker';
 
 import { AuditItem, CallbackItem, CrawledCallbackItem } from '../../model/Model';
 import { fetchAZFunc } from '../../utilities/fetchApi';
+import { renderDate } from '../../utilities/renderDate';
 import { CutomPropertyContext } from '../AuditLogCaptureManager';
+import { IAuditLogCaptureManagerState } from '../IAuditLogCaptureManagerState';
 
 export const ListItemsWebPartContext = React.createContext<WebPartContext>(null);
 export const CrawledContent: React.FunctionComponent = () => {
-  const selectedDateFormat = useRef<string>('Local');
 
+  debugger;
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const crawledCallbackItems = useQuery<CrawledCallbackItem[]>('crawledcallbackitems', () => {
     const url = `${parentContext.managementApiUrl}/api/ListCrawledContent/${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()}`;
-    return fetchAZFunc(parentContext.aadHttpClient, url, "GET");
+    return fetchAZFunc(parentContext.aadHttpClient, url, "GET")
+      .then((items) => {
+        debugger;
+        return items.map((item) => {
+          debugger;
+          var cbItem = item.callbackItem;
+          return { ...item, callbackItem: eval('(' + cbItem + ')') }
+        });
+      });
   },
     { refetchOnWindowFocus: false, enabled: false }
   );
@@ -41,7 +47,7 @@ export const CrawledContent: React.FunctionComponent = () => {
   },
     { refetchOnWindowFocus: false, enabled: true });
 
-  const parentContext: any = React.useContext<any>(CutomPropertyContext);
+  const parentContext: IAuditLogCaptureManagerState = React.useContext<IAuditLogCaptureManagerState>(CutomPropertyContext);
   const [mode, setMode] = useState<string>("display");
   // const viewCallback = async (item: CallbackItem) => {
   //   debugger;
@@ -117,7 +123,7 @@ export const CrawledContent: React.FunctionComponent = () => {
     },
     {
       name: 'CreationTime', minWidth: 150, maxWidth: 300, displayName: 'CreationTime ', sorting: true,
-      render: renderDate(selectedDateFormat.current), isResizable: true
+      render: renderDate(parentContext.selectedDateFormat), isResizable: true
     },
     { name: 'UserId', minWidth: 300, maxWidth: 300, displayName: 'UserId ', sorting: true, isResizable: true },
     { name: 'Operation', minWidth: 100, maxWidth: 100, displayName: 'Operation ', sorting: true, isResizable: true },
@@ -166,7 +172,7 @@ export const CrawledContent: React.FunctionComponent = () => {
           crawledCallbackItems.refetch();
 
         }}>Get Crawled Content</PrimaryButton>
-      <DateFormatPicker selectedDateFormat={selectedDateFormat}></DateFormatPicker>
+
       <ListView items={crawledCallbackItems.data} viewFields={viewFieldsCrawledCallbackItems}></ListView>
 
       <Panel type={PanelType.extraLarge}

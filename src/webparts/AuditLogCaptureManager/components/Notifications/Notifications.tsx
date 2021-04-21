@@ -11,10 +11,10 @@ import { Notification } from '../../model/Model';
 import { fetchAZFunc } from '../../utilities/fetchApi';
 import { CutomPropertyContext } from '../AuditLogCaptureManager';
 import { DateFormatPicker } from '../DateFormatPicker';
-
+import { IAuditLogCaptureManagerState } from '../IAuditLogCaptureManagerState';
 export const ListItemsWebPartContext = React.createContext<WebPartContext>(null);
 export const Notifications: React.FunctionComponent = () => {
-  const selectedDateFormat = useRef<string>('Local');
+
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const crawledCallbackItems = useQuery<Notification[]>('notifications', () => {
@@ -24,23 +24,23 @@ export const Notifications: React.FunctionComponent = () => {
   },
     { refetchOnWindowFocus: false, enabled: false }
   );
-  const parentContext: any = React.useContext<any>(CutomPropertyContext);
+  const parentContext: IAuditLogCaptureManagerState = React.useContext<IAuditLogCaptureManagerState>(CutomPropertyContext);
 
 
   const viewFieldsNotifications: IViewField[] = [
     {
       name: 'notificationSent', minWidth: 100, maxWidth: 200, displayName: 'Notification Sent', sorting: true,
-      render: renderDate(selectedDateFormat.current), isResizable: true
+      render: renderDate(parentContext.selectedDateFormat), isResizable: true
     },
     { name: 'notificationStatus', minWidth: 50, maxWidth: 100, displayName: 'Status', sorting: true, isResizable: true },
     { name: 'contentType', minWidth: 75, maxWidth: 200, displayName: 'Content Type', sorting: true, isResizable: true },
     {
-      name: 'contentCreated', minWidth: 100, maxWidth: 120, displayName: 'Content Created', sorting: true,
-      render: renderDate(selectedDateFormat.current), isResizable: true
+      name: 'contentCreated', minWidth: 100, maxWidth: 200, displayName: 'Content Created', sorting: true,
+      render: renderDate(parentContext.selectedDateFormat), isResizable: true
     },
     {
-      name: 'contentExpiration', minWidth: 100, maxWidth: 120, displayName: 'Expires', sorting: true,
-      render: renderDate(selectedDateFormat.current), isResizable: true
+      name: 'contentExpiration', minWidth: 100, maxWidth: 200, displayName: 'Expires', sorting: true,
+      render: renderDate(parentContext.selectedDateFormat), isResizable: true
     },
     { name: 'contentId', minWidth: 40, maxWidth: 300, displayName: 'ID', sorting: true, isResizable: true },
     { name: 'contentUri', minWidth: 40, maxWidth: 500, displayName: 'Content Uri', sorting: true, isResizable: true },
@@ -61,7 +61,7 @@ export const Notifications: React.FunctionComponent = () => {
           crawledCallbackItems.refetch();
 
         }}>Get Notifications</PrimaryButton>
-      <DateFormatPicker selectedDateFormat={selectedDateFormat}></DateFormatPicker>
+
       <ListView items={crawledCallbackItems.data} viewFields={viewFieldsNotifications}></ListView>
 
     </div>

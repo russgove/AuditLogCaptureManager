@@ -1,5 +1,5 @@
 import { WebPartContext } from '@microsoft/sp-webpart-base';
-import { DefaultButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
+import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import * as React from 'react';
 import { useState } from 'react';
@@ -69,9 +69,9 @@ export const SubscriptionForm: React.FunctionComponent<ISubscriptionFormProps> =
                     }
                 }}
                 >Save</PrimaryButton>
-                <DefaultButton onClick={(e) => {
+                <PrimaryButton onClick={(e) => {
                     props.cancel(e);
-                }}>Cancel</DefaultButton>
+                }}>Cancel</PrimaryButton>
             </div>
             This operation starts a subscription to the specified content type.If a subscription to the specified content type already exists, this operation is used to:
 
