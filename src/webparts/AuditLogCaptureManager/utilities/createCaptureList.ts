@@ -1,32 +1,40 @@
 import { AadHttpClient, HttpClientResponse } from '@microsoft/sp-http';
 import { sp } from "@pnp/sp";
-import { ContentTypes, IContentType, IContentTypeInfo, IContentTypes } from "@pnp/sp/content-types";
+import { ContentTypes, IContentType, IContentTypeAddResult, IContentTypeInfo, IContentTypes } from "@pnp/sp/content-types";
 import { Fields, FieldTypes } from "@pnp/sp/fields";
 import { ILists, Lists } from "@pnp/sp/lists";
 import { IContextInfo, ISite, Site } from "@pnp/sp/sites";
 import { IWebs, Web, Webs } from "@pnp/sp/webs";
 import { find } from 'lodash';
-
-import { createContentType } from './createContentType';
+import { IAuditLogCaptureManagerProps } from '../components/IAuditLogCaptureManagerProps';
+import { createContentType } from './createContentTypeViaApi';
 
 import "@pnp/sp/presets/all";
 import "@pnp/sp/sites";
 
-export async function createCaptureList(client: AadHttpClient, siteUrl: string, listName: string, managementApiUrl: string): Promise<any> {
-
+export async function createCaptureList(parentContext: IAuditLogCaptureManagerProps, siteUrl: string, listName: string, managementApiUrl: string): Promise<any> {
+    debugger;
+    const ctId = "0x0100002CF808DCF34FDFBAF1378B8bCAA777";
     try {
         var url: string = decodeURIComponent(siteUrl);
         var rootweb = Web(url);
-        //const ct: IContentType = await rootweb.contentTypes.getById("0x0100002cf808dcf34fdfbaf1378b8bcaa777").get();
-        var ctId: string = await rootweb.contentTypes.get().
-            then((cts) => {
-                return find(cts, (ct) => { return ct.Name === "Audit Item" }).Id.StringValue;
-            });
         debugger;
-        if (!ctId) {
+        const found = await (await rootweb.contentTypes.getById(ctId)()).Id;
+        debugger;
+        // var ctId: string = await rootweb.contentTypes.get().
+        //     then((cts) => {
+        //         return find(cts, (ct) => { return ct.Name === "Audit Item" }).Id.StringValue;
+        //     });
+
+        debugger;
+        if (!found) {
 
             try {
-                ctId = await createContentType(siteUrl);
+                debugger;
+                var ctAddResult = await createContentType(siteUrl, parentContext)
+                debugger;
+                const ct = await rootweb.contentTypes.getById(ctId)();
+
             }
             catch (err) {
                 console.log(err);
@@ -44,16 +52,19 @@ export async function createCaptureList(client: AadHttpClient, siteUrl: string, 
 
 
         debugger;
+
         const newList = await rootweb.lists.add(listName, "Audit Data", 100, true);
+        debugger;
         const addresult = await newList.list.contentTypes.addAvailableContentType(ctId);
 
         debugger;
 
         const list = await newList.list.get();
-
+        debugger;
         return list.Id;
     }
     catch (ee) {
+        console.log(ee);
         debugger;
     }
 }

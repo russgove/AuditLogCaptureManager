@@ -8,7 +8,7 @@ import { useState, useRef } from 'react';
 import { useQuery } from 'react-query';
 import { renderDate } from '../../utilities/renderDate';
 import { Notification } from '../../model/Model';
-import { fetchAZFunc } from '../../utilities/fetchApi';
+import { callManagementApi } from '../../utilities/callManagementApi';
 import { CutomPropertyContext } from '../AuditLogCaptureManager';
 import { DateFormatPicker } from '../DateFormatPicker';
 import { IAuditLogCaptureManagerState } from '../IAuditLogCaptureManagerState';
@@ -20,7 +20,7 @@ export const Notifications: React.FunctionComponent = () => {
   const crawledCallbackItems = useQuery<Notification[]>('notifications', () => {
     var now = new Date();
     const url = `${parentContext.managementApiUrl}/api/ListNotifications/Audit.SharePoint/${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()}T${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
-    return fetchAZFunc(parentContext.aadHttpClient, url, "GET");
+    return callManagementApi(parentContext.aadHttpClient, url, "GET");
   },
     { refetchOnWindowFocus: false, enabled: false }
   );

@@ -3,33 +3,36 @@ require('sp-init');
 require('microsoft-ajax');
 require('sp-runtime');
 require('sharepoint');
-export async function createContentType(siteUrl: string): Promise<string> {
+// export async function createContentType(siteUrl: string): Promise<string> {
+// debugger
+//   const context: SP.ClientContext = new SP.ClientContext(decodeURIComponent(siteUrl));
+//   var itemContentType = context.get_site().get_rootWeb().get_contentTypes().getById("0x01");
+//   context.load(itemContentType);
+//   await executeQuery(context)
+//     .catch((err) => {
+//       console.log(err);
+//       debugger;
+//     });
 
+
+//   var contentTypeCreationInformation = new SP.ContentTypeCreationInformation();
+//   contentTypeCreationInformation.set_name("Audit Item");
+//   contentTypeCreationInformation.set_description("Microsoft 365 SharePoint Audit Capture detail record");
+//   contentTypeCreationInformation.set_parentContentType(itemContentType);
+
+//   var newContentType: SP.ContentType = context.get_site().get_rootWeb().get_contentTypes()
+//     .add(contentTypeCreationInformation);
+//   await addFields(context, newContentType);
+//   await executeQuery(context)
+//     .catch((err) => {
+//       console.log(err);
+//     });
+//   return newContentType.get_stringId();
+// }
+export async function addFields(siteUrl: string, ctId: string) {
   const context: SP.ClientContext = new SP.ClientContext(decodeURIComponent(siteUrl));
-  var itemContentType = context.get_site().get_rootWeb().get_contentTypes().getById("0x01");
-  context.load(itemContentType);
-  await executeQuery(context)
-    .catch((err) => {
-      console.log(err);
-      debugger;
-    });
-
-
-  var contentTypeCreationInformation = new SP.ContentTypeCreationInformation();
-  contentTypeCreationInformation.set_name("Audit Item");
-  contentTypeCreationInformation.set_description("Microsoft 365 SharePoint Audit Capture detail record");
-  contentTypeCreationInformation.set_parentContentType(itemContentType);
-
-  var newContentType: SP.ContentType = context.get_site().get_rootWeb().get_contentTypes()
-    .add(contentTypeCreationInformation);
-  await addFields(context, newContentType);
-  await executeQuery(context)
-    .catch((err) => {
-      console.log(err);
-    });
-  return newContentType.get_stringId();
-}
-async function addFields(context: SP.ClientContext, newContentType: SP.ContentType) {
+  var newContentType = context.get_site().get_rootWeb().get_contentTypes().getById("0x01");
+  //   context.load(itemContentType);
   await addTextField(context, newContentType, "CreationTime", "Creation Time", "The date and time in Coordinated Universal Time (UTC) when the user performed the activity.");
   await addTextField(context, newContentType, "UserId", "User Id", "The UPN (User Principal Name) of the user who performed the action (specified in the Operation property) that resulted in the record being logged; for example, my_name@my_domain_name. Note that records for activity performed by system accounts (such as SHAREPOINT\system or NT AUTHORITY\SYSTEM) are also included. In SharePoint, another value display in the UserId property is app@sharepoint. This indicates that the 'user' who performed the activity was an application that has the necessary permissions in SharePoint to perform organization-wide actions (such as search a SharePoint site or OneDrive account) on behalf of a user, admin, or service. For more information, see The app@sharepoint user in audit records.");
   await addTextField(context, newContentType, "Operation", "Operation", "The name of the user or admin activity. For a description of the most common operations/activities, see Search the audit log in the Office 365 Protection Center. For Exchange admin activity, this property identifies the name of the cmdlet that was run. For Dlp events, this can be 'DlpRuleMatch', 'DlpRuleUndo' or 'DlpInfo', which are described under 'DLP schema' below.");
@@ -128,6 +131,11 @@ async function addFields(context: SP.ClientContext, newContentType: SP.ContentTy
   await addTextField(context, newContentType, "CustomEvent", "Custom Event", "Optional string for custom events.");
 
   await addTextField(context, newContentType, "ModifiedProperties", "Modified Properties", "Optional payload for custom events.");
+  await executeQuery(context)
+    .catch((err) => {
+      console.log(err);
+      debugger;
+    });
 }
 
 async function addTextField(context: SP.ClientContext, newContentType: SP.ContentType, fieldName: string, displayName: string, description: string): Promise<any> {

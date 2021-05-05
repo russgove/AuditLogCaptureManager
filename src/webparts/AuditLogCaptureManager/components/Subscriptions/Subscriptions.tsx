@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { useQuery } from 'react-query';
 
 import { Subscription } from '../../model/Model';
-import { fetchAZFunc } from '../../utilities/fetchApi';
+import { callManagementApi } from '../../utilities/callManagementApi';
 import { CutomPropertyContext } from '../AuditLogCaptureManager';
 import { SubscriptionForm } from './SubscriptionForm';
 
@@ -18,7 +18,7 @@ export const Subscriptions: React.FunctionComponent = () => {
   const [selectedItem, setSelectedItem] = useState<Subscription>(null);
   const subscriptions = useQuery<Array<Subscription>>('subscriptions', () => {
     const url = parentContext.managementApiUrl + "/api/ListSubscriptions";
-    return fetchAZFunc(parentContext.aadHttpClient, url, "GET");
+    return callManagementApi(parentContext.aadHttpClient, url, "GET");
   });
 
   const viewFields: IViewField[] = [

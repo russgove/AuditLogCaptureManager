@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { useQuery } from 'react-query';
 
 import { AuditItem, CallbackItem, CrawledCallbackItem } from '../../model/Model';
-import { fetchAZFunc } from '../../utilities/fetchApi';
+import { callManagementApi } from '../../utilities/callManagementApi';
 import { renderDate } from '../../utilities/renderDate';
 import { CutomPropertyContext } from '../AuditLogCaptureManager';
 import { IAuditLogCaptureManagerState } from '../IAuditLogCaptureManagerState';
@@ -23,7 +23,7 @@ export const CrawledContent: React.FunctionComponent = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const crawledCallbackItems = useQuery<CrawledCallbackItem[]>('crawledcallbackitems', () => {
     const url = `${parentContext.managementApiUrl}/api/ListCrawledContent/${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()}`;
-    return fetchAZFunc(parentContext.aadHttpClient, url, "GET")
+    return callManagementApi(parentContext.aadHttpClient, url, "GET")
       .then((items) => {
         debugger;
         return items.map((item) => {
@@ -43,7 +43,7 @@ export const CrawledContent: React.FunctionComponent = () => {
 
     const url = `${parentContext.managementApiUrl}/api/FetchAvailableContentItem?contentUri=${encodeURIComponent(selectedCrawledCallbackItem.callbackItem.contentUri)}`;
     console.log(url);
-    return fetchAZFunc(parentContext.aadHttpClient, url, "GET");
+    return callManagementApi(parentContext.aadHttpClient, url, "GET");
   },
     { refetchOnWindowFocus: false, enabled: true });
 
@@ -62,7 +62,7 @@ export const CrawledContent: React.FunctionComponent = () => {
 
               const url = `${parentContext.managementApiUrl}/api/EnqueueCallbackItems`;
               const selected = [item];
-              await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(selected));
+              await callManagementApi(parentContext.aadHttpClient, url, "POST", JSON.stringify(selected));
               alert(`${selected.length} files where queued`);
             }}></i>
           &nbsp;&nbsp;    &nbsp;&nbsp;    &nbsp;&nbsp;
@@ -109,7 +109,7 @@ export const CrawledContent: React.FunctionComponent = () => {
 
             const url = `${parentContext.managementApiUrl}/api/EnqueueCallbackItems`;
             const selected = [item];
-            await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(selected));
+            await callManagementApi(parentContext.aadHttpClient, url, "POST", JSON.stringify(selected));
             alert(`${selected.length} files where queued`);
           }}></i>
           &nbsp;&nbsp;    &nbsp;&nbsp;    &nbsp;&nbsp;

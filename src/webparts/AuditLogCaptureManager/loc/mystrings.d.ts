@@ -2,6 +2,7 @@ declare interface IAuditLogCaptureManagerWebPartStrings {
   PropertyPaneDescription: string;
   BasicGroupName: string;
   DescriptionFieldLabel: string;
+  AuditItemContentTypeIdFieldLabel: string;
 }
 
 declare module 'AuditLogCaptureManagerWebPartStrings' {

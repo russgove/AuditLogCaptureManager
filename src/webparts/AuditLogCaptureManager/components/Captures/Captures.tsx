@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 
 import { SiteToCapture } from '../../model/Model';
-import { fetchAZFunc } from '../../utilities/fetchApi';
+import { callManagementApi } from '../../utilities/callManagementApi';
 import { CutomPropertyContext } from '../AuditLogCaptureManager';
 import { IAuditLogCaptureManagerState } from '../IAuditLogCaptureManagerState';
 import { CaptureForm } from './CaptureForm';
@@ -18,11 +18,11 @@ export const ListItemsWebPartContext = React.createContext<WebPartContext>(null)
 export const Captures: React.FunctionComponent = () => {
     const sitesToCapture = useQuery<Array<SiteToCapture>>('sitestocapture', () => {
         const url = parentContext.managementApiUrl + "/api/ListSitesToCapture";
-        return fetchAZFunc(parentContext.aadHttpClient, url, "GET");
+        return callManagementApi(parentContext.aadHttpClient, url, "GET");
     });
     const deleteSiteToCapture = useMutation((siteToCapture: SiteToCapture) => {
         const url = `${parentContext.managementApiUrl}/api/DeleteSiteToCapture?siteId=${siteToCapture.siteId}`;
-        return fetchAZFunc(parentContext.aadHttpClient, url, "Get");
+        return callManagementApi(parentContext.aadHttpClient, url, "Get");
     }, {
         onSuccess: () => {
             parentContext.queryClient.invalidateQueries('sitestocapture');

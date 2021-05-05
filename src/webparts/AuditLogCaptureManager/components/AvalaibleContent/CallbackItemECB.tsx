@@ -1,5 +1,5 @@
 import { AuditItem, CallbackItem, Subscription } from '../../model/Model';
-import { fetchAZFunc } from '../../utilities/fetchApi';
+import { callManagementApi } from '../../utilities/callManagementApi';
 import { CutomPropertyContext } from '../AuditLogCaptureManager';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { IViewField, ListView } from '@pnp/spfx-controls-react/lib/controls/listView';
@@ -22,7 +22,7 @@ export const CallbackItemECB: React.FunctionComponent<CallbackItemECBProps> = (p
   const replay = async (source: string, event) => {
     debugger;
     const url = `${parentContext.managementApiUrl}/api/EnqueueCallbackItems`;
-    await fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify([this]));//make it an array
+    await callManagementApi(parentContext.aadHttpClient, url, "POST", JSON.stringify([this]));//make it an array
     alert(`1 files where queued`);
   };
 

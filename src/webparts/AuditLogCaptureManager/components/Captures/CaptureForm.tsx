@@ -8,8 +8,8 @@ import { useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 
 import { ISharePointAuditOperation, SharePointAuditOperations, SiteToCapture } from '../../model/Model';
+import { callManagementApi } from '../../utilities/callManagementApi';
 import { createCaptureList } from '../../utilities/createCaptureList';
-import { fetchAZFunc } from '../../utilities/fetchApi';
 import { getList } from '../../utilities/getList';
 import { getSite } from '../../utilities/getSite';
 import { CutomPropertyContext } from '../AuditLogCaptureManager';
@@ -22,13 +22,14 @@ export interface ICaptureFormProps {
 }
 export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) => {
 
+    // make below a useref
     const options: Array<IComboBoxOption> = SharePointAuditOperations.map((sao) => {
         return { key: sao.Operation, text: sao.Description };
     });
     const parentContext: IAuditLogCaptureManagerProps = React.useContext<IAuditLogCaptureManagerProps>(CutomPropertyContext);
     const saveSiteToCapture = useMutation((siteToCapture: SiteToCapture) => {
         const url = `${parentContext.managementApiUrl}/api/AddSiteToCapture?siteUrl=${siteToCapture.siteUrl}&siteId=${siteToCapture.siteId}&eventsToCapture=${siteToCapture.eventsToCapture}&captureToListId=${siteToCapture.captureToListId}&captureToSiteId=${siteToCapture.captureToSiteId}`;
-        return fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(siteToCapture));
+        return callManagementApi(parentContext.aadHttpClient, url, "POST", JSON.stringify(siteToCapture));
     }, {
         onSuccess: () => {
             parentContext.queryClient.invalidateQueries('sitestocapture');
@@ -36,17 +37,22 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
     });
     const [item, setItem] = useState<SiteToCapture>(props.siteToCapture);
 
-    const selectedOptions: Array<JSX.Element> = SharePointAuditOperations.filter((sao) => {
-        return item.eventsToCapture.indexOf(sao.Operation) != -1
-    })
-        .map((sao) => {
-            return (<div>
-                <b>{sao.Operation}</b>-- {sao.Description}
-            </div>)
-        });
+    const selectedOptions: Array<JSX.Element> = item.eventsToCapture
+        ?
+        SharePointAuditOperations.filter((sao) => {
+
+            return item.eventsToCapture.indexOf(sao.Operation) != -1;
+        })
+            .map((sao) => {
+                return (<div>
+                    <b>{sao.Operation}</b>-- {sao.Description}
+                </div>)
+            })
+        :
+        [];
 
     const siteLookup = useQuery<any>(['siteLookup', item.siteUrl], (x) => {
-
+        debugger;
         setErrorMessage("");
         return getSite(item.siteUrl);
     }, {
@@ -67,8 +73,12 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
     const listLookup = useQuery<any>(['listLookup', item.siteUrl, item.captureToListId], (x) => {
 
         setErrorMessage("");
-
-        return getList(item.siteUrl, item.captureToListId);
+        if (item.siteUrl && item.captureToListId) {
+            return getList(item.siteUrl, item.captureToListId);
+        } else {
+            setList(null);
+            return Promise.resolve;
+        }
     }, {
         onSuccess: (response) => {
 
@@ -83,12 +93,13 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
     const [errorMessage, setErrorMessage] = useState<string>("");
     return (
         <div>
-            <TextField label="Site Url" value={decodeURIComponent(item.siteUrl)}
+            <TextField label="Site Url" value={item.siteUrl ? decodeURIComponent(item.siteUrl) : ""}
                 onChange={(e, newValue) => {
+                    debugger;
                     setItem((temp) => ({ ...temp, siteUrl: newValue }));
                 }}
                 onBlur={async () => {
-
+                    debugger;
                     siteLookup.refetch();
 
                 }}
@@ -108,7 +119,7 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
                         </div>
                     );
                 }}
-                selectedKey={item.eventsToCapture.split(";")}
+                selectedKey={item.eventsToCapture ? item.eventsToCapture.split(";") : []}
                 dropdownWidth={800}
                 onSelect={(ev) => {
                     console.log("OnSelect");
@@ -156,7 +167,7 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
 
             <IconButton iconProps={{ iconName: "NewFolder" }} text="Crate" label="DDDD" onClick={(async (e) => {
                 debugger;
-                var listId = await createCaptureList(parentContext.aadHttpClient, item.siteUrl, newListName, parentContext.managementApiUrl);
+                var listId = await createCaptureList(parentContext, item.siteUrl, newListName, parentContext.managementApiUrl);
                 console.log(listId);
                 setItem((temp) => ({ ...temp, captureToListId: listId }));
                 debugger;

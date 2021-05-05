@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useMutation } from 'react-query';
 
 import { Subscription } from '../../model/Model';
-import { fetchAZFunc } from '../../utilities/fetchApi';
+import { callManagementApi } from '../../utilities/callManagementApi';
 import { CutomPropertyContext } from '../AuditLogCaptureManager';
 
 export const ListItemsWebPartContext = React.createContext<WebPartContext>(null);
@@ -20,7 +20,7 @@ export const SubscriptionForm: React.FunctionComponent<ISubscriptionFormProps> =
 
     const saveSubscription = useMutation((subscription: Subscription) => {
         const url = `${parentContext.managementApiUrl}/api/StartsUBSCRIPTION?ContentType=${subscription.contentType}&address=${subscription["webhook.address"]}&authId=${subscription["webhook.authId"]}&expiration=${subscription["webhook.expiration"]}`;
-        return fetchAZFunc(parentContext.aadHttpClient, url, "POST", JSON.stringify(subscription));
+        return callManagementApi(parentContext.aadHttpClient, url, "POST", JSON.stringify(subscription));
     }, {
         onSuccess: () => {
             parentContext.queryClient.invalidateQueries('subscriptions');

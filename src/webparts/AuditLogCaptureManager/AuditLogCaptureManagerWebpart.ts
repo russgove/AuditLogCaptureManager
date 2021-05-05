@@ -16,6 +16,7 @@ import { IAuditLogCaptureManagerProps } from './components/IAuditLogCaptureManag
 const LOG_SOURCE: string = 'AuditLogCaptureMananger';
 export interface IAuditLogCaptureManagerWebPartProps {
   managementApiUrl: string;
+  auditItemContentTypeId: string;
 }
 
 export default class AuditLogCaptureManagerWebPart extends BaseClientSideWebPart<IAuditLogCaptureManagerWebPartProps> {
@@ -85,6 +86,9 @@ export default class AuditLogCaptureManagerWebPart extends BaseClientSideWebPart
               groupFields: [
                 PropertyPaneTextField('managementApiUrl', {
                   label: strings.DescriptionFieldLabel
+                }),
+                PropertyPaneTextField('auditItemContentTypeId', {
+                  label: strings.AuditItemContentTypeIdFieldLabel
                 })
               ]
             }
