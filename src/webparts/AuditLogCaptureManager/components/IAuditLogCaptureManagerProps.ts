@@ -4,4 +4,5 @@ export interface IAuditLogCaptureManagerProps {
   aadHttpClient: AadHttpClient;
   managementApiUrl: string;
   queryClient: QueryClient;
+  auditItemContentTypeId: string;
 }

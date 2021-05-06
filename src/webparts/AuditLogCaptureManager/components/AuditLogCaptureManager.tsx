@@ -5,13 +5,12 @@ import { ReactQueryDevtools } from 'react-query/devtools';
 
 import styles from './AuditLogCaptureManager.module.scss';
 import { AvailableContent } from './AvalaibleContent/AvailableContent';
-
-import { DateFormatPicker } from './DateFormatPicker';
-import { CrawledContent } from './CrawledContent/CrawledContent';
-import { Notifications } from './Notifications/Notifications';
 import { Captures } from './Captures/Captures';
+import { CrawledContent } from './CrawledContent/CrawledContent';
+import { DateFormatPicker } from './DateFormatPicker';
 import { IAuditLogCaptureManagerProps } from './IAuditLogCaptureManagerProps';
 import { IAuditLogCaptureManagerState } from './IAuditLogCaptureManagerState';
+import { Notifications } from './Notifications/Notifications';
 import { Subscriptions } from "./Subscriptions/Subscriptions";
 
 export const CutomPropertyContext: any = React.createContext<IAuditLogCaptureManagerProps>(undefined);
@@ -20,7 +19,7 @@ export default class AuditLogCaptureManager extends React.Component<IAuditLogCap
     super(props);
     this.state = {
       currentAction: "Captures", selectedDateFormat: "Local", aadHttpClient: this.props.aadHttpClient,
-      managementApiUrl: this.props.managementApiUrl, queryClient: this.props.queryClient
+      managementApiUrl: this.props.managementApiUrl, queryClient: this.props.queryClient, auditItemContentTypeId: this.props.auditItemContentTypeId
     };
   }
   public render(): React.ReactElement<IAuditLogCaptureManagerProps> {

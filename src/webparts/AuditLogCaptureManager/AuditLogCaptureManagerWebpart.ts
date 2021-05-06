@@ -58,7 +58,8 @@ export default class AuditLogCaptureManagerWebPart extends BaseClientSideWebPart
       {
         managementApiUrl: this.properties.managementApiUrl,
         aadHttpClient: this.aadHttpClient,
-        queryClient: queryClient
+        queryClient: queryClient,
+        auditItemContentTypeId: this.properties.auditItemContentTypeId
       }
     );
 

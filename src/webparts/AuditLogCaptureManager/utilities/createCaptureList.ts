@@ -6,6 +6,7 @@ import { ILists, Lists } from "@pnp/sp/lists";
 import { IContextInfo, ISite, Site } from "@pnp/sp/sites";
 import { IWebs, Web, Webs } from "@pnp/sp/webs";
 import { find } from 'lodash';
+
 import { IAuditLogCaptureManagerProps } from '../components/IAuditLogCaptureManagerProps';
 import { createContentType } from './createContentTypeViaApi';
 
@@ -31,7 +32,7 @@ export async function createCaptureList(parentContext: IAuditLogCaptureManagerPr
 
             try {
                 debugger;
-                var ctAddResult = await createContentType(siteUrl, parentContext)
+                var ctAddResult = await createContentType(siteUrl, parentContext);
                 debugger;
                 const ct = await rootweb.contentTypes.getById(ctId)();
 

@@ -29,7 +29,7 @@ export const CrawledContent: React.FunctionComponent = () => {
         return items.map((item) => {
           debugger;
           var cbItem = item.callbackItem;
-          return { ...item, callbackItem: eval('(' + cbItem + ')') }
+          return { ...item, callbackItem: eval('(' + cbItem + ')') };
         });
       });
   },
