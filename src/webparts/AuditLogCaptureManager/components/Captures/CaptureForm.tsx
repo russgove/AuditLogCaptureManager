@@ -11,7 +11,7 @@ import { ISharePointAuditOperation, SharePointAuditOperations, SiteToCapture } f
 import { callManagementApi } from '../../utilities/callManagementApi';
 import { createCaptureList } from '../../utilities/createCaptureList';
 import { getContentType } from '../../utilities/getContentType';
-import { getList } from '../../utilities/getList';
+import { getLists } from '../../utilities/getLists';
 import { getSite } from '../../utilities/getSite';
 import { CutomPropertyContext } from '../AuditLogCaptureManager';
 import { IAuditLogCaptureManagerProps } from '../IAuditLogCaptureManagerProps';
@@ -28,15 +28,7 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
         return { key: sao.Operation, text: sao.Description };
     });
     const parentContext: IAuditLogCaptureManagerProps = React.useContext<IAuditLogCaptureManagerProps>(CutomPropertyContext);
-    const addContentTypeToSite = useMutation((siteToCapture: SiteToCapture) => {
-        const url = `${parentContext.managementApiUrl}/api/AddContentTypeToSite?siteUrl=${siteToCapture.siteUrl}&siteId=${siteToCapture.siteId}&eventsToCapture=${siteToCapture.eventsToCapture}&captureToListId=${siteToCapture.captureToListId}&captureToSiteId=${siteToCapture.captureToSiteId}`;
-        return callManagementApi(parentContext.aadHttpClient, url, "POST", JSON.stringify(siteToCapture));
-    }, {
-        onSuccess: () => {
-            debugger;
-            parentContext.queryClient.refetchQueries('contentTypeLookup');
-        }
-    });
+
     const saveSiteToCapture = useMutation((siteToCapture: SiteToCapture) => {
         const url = `${parentContext.managementApiUrl}/api/AddSiteToCapture?siteUrl=${siteToCapture.siteUrl}&siteId=${siteToCapture.siteId}&eventsToCapture=${siteToCapture.eventsToCapture}&captureToListId=${siteToCapture.captureToListId}&captureToSiteId=${siteToCapture.captureToSiteId}`;
         return callManagementApi(parentContext.aadHttpClient, url, "POST", JSON.stringify(siteToCapture));
@@ -84,49 +76,58 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
     const contentTypeLookup = useQuery<any>(['contentTypeLookup', item.siteUrl], (x) => {
         debugger;
         setErrorMessage("");
-        return getContentType(parentContext, item.siteUrl);
+        if (item.siteUrl) {
+            return getContentType(parentContext, item.siteUrl);
+        } else {
+            return Promise.resolve()
+        }
     }, {
         refetchOnWindowFocus: false,
-        enabled: false, // turned off by default, manual refetch is needed
+        enabled: true, // turned off by default, manual refetch is needed
         onSuccess: (response) => {
 
-            setItem((temp) => ({
-                ...temp,
-                siteId: response.Id,
-                captureToSiteId: response.Id
-            }));
+            // setItem((temp) => ({
+            //     ...temp,
+            //     siteId: response.Id,
+            //     captureToSiteId: response.Id
+            // }));
         }
         //  onError: ((err: string) => {
 
         //     setErrorMessage(err);
         // })
     });
-    const listLookup = useQuery<any>(['listLookup', item.siteUrl, item.captureToListId], (x) => {
-        setErrorMessage("");
-        if (item.siteUrl && item.captureToListId) {
+    const addContentTypeToSite = useMutation((siteToCapture: SiteToCapture) => {
+        const url = `${parentContext.managementApiUrl}/api/AddContentTypeToSite?siteUrl=${siteToCapture.siteUrl}&siteId=${siteToCapture.siteId}&eventsToCapture=${siteToCapture.eventsToCapture}&captureToListId=${siteToCapture.captureToListId}&captureToSiteId=${siteToCapture.captureToSiteId}`;
+        return callManagementApi(parentContext.aadHttpClient, url, "POST", JSON.stringify(siteToCapture));
+    }, {
+        onSuccess: () => {
             debugger;
-            return getList(item.siteUrl, item.captureToListId);
+            contentTypeLookup.refetch();
+            //parentContext.queryClient.invalidateQueries('contentTypeLookup');
+        }
+    });
+    const listLookup = useQuery<any>(['listLookup', item.siteUrl], (x) => {
+        setErrorMessage("");
+        if (item.siteUrl) {
+            debugger;
+            return getLists(item.siteUrl);
         } else {
-            setList(null);
             return Promise.resolve;
         }
     }, {
-        onSuccess: (response) => {
-            setList(response);
-        }
-        , onError: ((err: any) => {
-            debugger;
-            setErrorMessage(err.Message);
-        })
+        refetchOnWindowFocus: false,
+        enabled: false, // turned off by default, manual refetch is needed;
     });
     const [newListName, setnewListName] = useState<string>("");
-    const [list, setList] = useState<any>();
+
     const [errorMessage, setErrorMessage] = useState<string>("");
+    // debugger;
     return (
         <div>
             <TextField label="Site Url" value={item.siteUrl ? decodeURIComponent(item.siteUrl) : ""}
                 onChange={(e, newValue) => {
-                    debugger;
+
                     setItem((temp) => ({ ...temp, siteUrl: newValue }));
                 }}
                 onBlur={async () => {
@@ -140,12 +141,12 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
                     setItem((temp) => ({ ...temp, siteId: newValue }));
                 }}
             ></TextField>
-            <div style={{ display: contentTypeLookup.isSuccess ? 'none' : 'block' }}>
+            <div style={{ display: contentTypeLookup.isError ? 'block' : 'none' }}>
                 <span style={{ color: "Red" }} >  The Audit Item content type ({parentContext.auditItemContentTypeId}) does not exist on this site.</span>
                 <PrimaryButton
                     onClick={async (e) => {
+                        debugger;
                         try {
-
                             addContentTypeToSite.mutateAsync(item)
                                 .catch((err) => {
                                     debugger;
@@ -159,7 +160,11 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
                     }}
                 >Create the Audit Item content type</PrimaryButton>
             </div>
+            <div style={{ display: addContentTypeToSite.isLoading ? 'block' : 'none' }}>
+                <span style={{ color: "Green" }} >  The Audit Item content type ({parentContext.auditItemContentTypeId}) is being created on this site.</span>
+            </div>
             <ComboBox label="Events To Capture" options={options} multiSelect
+                disabled={contentTypeLookup.isError}
                 text={item.eventsToCapture}
                 onRenderOption={(option): JSX.Element => {
                     return (
@@ -207,7 +212,7 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
             // }}
             ></TextField>
 
-            <TextField label="Capture To List" value={list ? list.Title : ""} readOnly={true} borderless={true}></TextField>
+            <TextField label="Capture To List" value={""} readOnly={true} borderless={true}></TextField>
             <TextField label="New Capture To List" value={newListName} onChange={(e, newValue) => {
                 setnewListName(newValue);
             }}></TextField>
