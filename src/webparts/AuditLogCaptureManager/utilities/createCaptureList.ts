@@ -1,11 +1,6 @@
-import { AadHttpClient, HttpClientResponse } from '@microsoft/sp-http';
-import { sp } from "@pnp/sp";
-import { ContentTypes, IContentType, IContentTypeAddResult, IContentTypeInfo, IContentTypes } from "@pnp/sp/content-types";
-import { Fields, FieldTypes } from "@pnp/sp/fields";
-import { ILists, Lists } from "@pnp/sp/lists";
-import { IContextInfo, ISite, Site } from "@pnp/sp/sites";
-import { IWebs, Web, Webs } from "@pnp/sp/webs";
-import { find } from 'lodash';
+
+import { Web } from "@pnp/sp/webs";
+
 
 import { IAuditLogCaptureManagerProps } from '../components/IAuditLogCaptureManagerProps';
 import { createContentType } from './createContentTypeViaApi';

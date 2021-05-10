@@ -5,7 +5,7 @@ import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import * as React from 'react';
 import { useState } from 'react';
 import { useQuery } from 'react-query';
-
+import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { Subscription } from '../../model/Model';
 import { callManagementApi } from '../../utilities/callManagementApi';
 import { CutomPropertyContext } from '../AuditLogCaptureManager';
@@ -13,6 +13,7 @@ import { SubscriptionForm } from './SubscriptionForm';
 
 export const ListItemsWebPartContext = React.createContext<WebPartContext>(null);
 export const Subscriptions: React.FunctionComponent = () => {
+  debugger;
   const parentContext: any = React.useContext<any>(CutomPropertyContext);
   const [mode, setMode] = useState<string>("display");
   const [selectedItem, setSelectedItem] = useState<Subscription>(null);
@@ -44,6 +45,11 @@ export const Subscriptions: React.FunctionComponent = () => {
     <div>
       Subscriptions
       <ListView items={subscriptions.data} viewFields={viewFields}></ListView>
+      <PrimaryButton onClick={async (e) => {
+        setMode("Edit");
+        setSelectedItem(new Subscription());
+
+      }}>Add Site</PrimaryButton>
       <Panel type={PanelType.smallFixedFar} headerText="Edit Subscription" isOpen={mode === "Edit"} onDismiss={(e) => {
         setMode("Display");
       }} >

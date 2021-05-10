@@ -77,7 +77,7 @@ function executeQuery(context: SP.ClientContext): Promise<any> {
         (sender: any, err: SP.ClientRequestFailedEventArgs) => {
           debugger;
           alert(err.get_message());
-          console.timeLog(err.get_errorDetails());
+          console.log(err.get_errorDetails());
           return reject(err.get_message());
         }
       );

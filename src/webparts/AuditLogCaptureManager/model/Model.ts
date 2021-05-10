@@ -41,10 +41,14 @@ export class Webhook {
 }
 export class SiteToCapture {
 
+    public id: string;
     public siteUrl: string;
     public siteId: string;
+    public siteTitle: string;
     public eventsToCapture: string;
     public captureToSiteId: string;
+    public captureToSiteUrl: string;
+    public captureToSiteTitle: string;
     public captureToListId: string;
 }
 
@@ -85,6 +89,17 @@ export class AuditItem {
 
 
 }
+export interface IContentType {
+    ContentType: string;
+    Enabled: boolean;
+}
+export var ContentTypes: Array<IContentType> = [
+    { ContentType: "Audit.AzureActiveDirectory", Enabled: true },
+    { ContentType: "Audit.Exchange", Enabled: true },
+    { ContentType: "Audit.General", Enabled: true },
+    { ContentType: "Audit.SharePoint", Enabled: true },
+    { ContentType: "DLP.All", Enabled: true }
+];
 export interface ISharePointAuditOperation {
     Operation: string;
     Description: string;

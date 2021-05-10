@@ -3,6 +3,7 @@ import { IViewField, ListView } from '@pnp/spfx-controls-react/lib/controls/list
 import { getIconClassName } from '@uifabric/styling';
 import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { ChoiceGroup, IChoiceGroupOption } from 'office-ui-fabric-react/lib/ChoiceGroup';
+import { ComboBox, IComboBoxOption } from 'office-ui-fabric-react/lib/ComboBox';
 import { ContextualMenuItemType } from 'office-ui-fabric-react/lib/ContextualMenu';
 import { DatePicker } from 'office-ui-fabric-react/lib/DatePicker';
 import { IColumn } from 'office-ui-fabric-react/lib/DetailsList';
@@ -12,19 +13,21 @@ import { useState } from 'react';
 import { useQuery } from 'react-query';
 
 import { AuditItem, CallbackItem } from '../../model/Model';
+import { ContentTypes, IContentType, Subscription } from '../../model/Model';
 import { callManagementApi } from '../../utilities/callManagementApi';
 import { renderDate } from '../../utilities/renderDate';
 import { CutomPropertyContext } from '../AuditLogCaptureManager';
-
 import { IAuditLogCaptureManagerState } from '../IAuditLogCaptureManagerState';
 import { CallbackItemECB, CallbackItemECBProps } from './CallbackItemECB';
 
 export const ListItemsWebPartContext = React.createContext<WebPartContext>(null);
 export const AvailableContent: React.FunctionComponent = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [contentType, setContentType] = useState<string>("Audit.SharePoint");
   const callbackItems = useQuery<CallbackItem[]>('callbackitems', () => {
+    debugger;
     var now = new Date();
-    const url = `${parentContext.managementApiUrl}/api/ListAvailableContent/${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()}T${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+    const url = `${parentContext.managementApiUrl}/api/ListAvailableContent/${contentType}/${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()}T${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
     return callManagementApi(parentContext.aadHttpClient, url, "GET");
   },
     { refetchOnWindowFocus: false, enabled: false }
@@ -42,7 +45,9 @@ export const AvailableContent: React.FunctionComponent = () => {
 
   const parentContext: IAuditLogCaptureManagerState = React.useContext<any>(CutomPropertyContext);
   const [mode, setMode] = useState<string>("display");
-
+  const options: Array<IComboBoxOption> = ContentTypes.map((ct) => {
+    return { key: ct.ContentType, text: ct.ContentType, disabled: !ct.Enabled };
+  });
   const viewFieldsCallbackItems: IViewField[] = [
     {
       name: 'actions', minWidth: 50, maxWidth: 50, displayName: 'Actions', render: (item?: any, index?: number) => {
@@ -145,6 +150,27 @@ export const AvailableContent: React.FunctionComponent = () => {
 
     <div>
       AvailableContent
+      <ComboBox label="Content Type" options={options}
+
+        text={contentType}
+        // onRenderOption={(option): JSX.Element => {
+        //   return (
+        //     <div>
+        //       <b>{option.key}</b>--{option.text}
+        //     </div>
+        //   );
+        // }}
+        selectedKey={contentType}
+        //dropdownWidth={}
+        onChange={(e, newValue) => {
+          setContentType(newValue.text);
+
+
+        }}
+        onResolveOptions={(e) => {
+          return e;
+        }}
+      />
       <DatePicker value={selectedDate}
         onSelectDate={(date) => {
           setSelectedDate(date);

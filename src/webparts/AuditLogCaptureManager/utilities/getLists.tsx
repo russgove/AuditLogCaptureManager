@@ -1,6 +1,6 @@
 import { ILists } from "@pnp/sp/lists";
-import { Site } from "@pnp/sp/sites";
-import { IWebs, Web, Webs } from "@pnp/sp/webs";
+
+import { Web } from "@pnp/sp/webs";
 
 import "@pnp/sp/presets/all";
 import "@pnp/sp/sites";

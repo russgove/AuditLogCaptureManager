@@ -1,11 +1,12 @@
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
+import { ComboBox, IComboBoxOption } from 'office-ui-fabric-react/lib/ComboBox';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import * as React from 'react';
 import { useState } from 'react';
 import { useMutation } from 'react-query';
 
-import { Subscription } from '../../model/Model';
+import { ContentTypes, IContentType, Subscription } from '../../model/Model';
 import { callManagementApi } from '../../utilities/callManagementApi';
 import { CutomPropertyContext } from '../AuditLogCaptureManager';
 
@@ -19,7 +20,7 @@ export const SubscriptionForm: React.FunctionComponent<ISubscriptionFormProps> =
     const parentContext: any = React.useContext<any>(CutomPropertyContext);
 
     const saveSubscription = useMutation((subscription: Subscription) => {
-        const url = `${parentContext.managementApiUrl}/api/StartsUBSCRIPTION?ContentType=${subscription.contentType}&address=${subscription["webhook.address"]}&authId=${subscription["webhook.authId"]}&expiration=${subscription["webhook.expiration"]}`;
+        const url = `${parentContext.managementApiUrl}/api/StartsUBSCRIPTION?contentType=${subscription.contentType}&address=${subscription["webhook.address"]}&authId=${subscription["webhook.authId"]}&expiration=${subscription["webhook.expiration"]}`;
         return callManagementApi(parentContext.aadHttpClient, url, "POST", JSON.stringify(subscription));
     }, {
         onSuccess: () => {
@@ -28,12 +29,37 @@ export const SubscriptionForm: React.FunctionComponent<ISubscriptionFormProps> =
     });
     const [item, setItem] = useState<Subscription>(props.subscription);
     const [errorMessage, setErrorMessage] = useState<string>("");
+    const options: Array<IComboBoxOption> = ContentTypes.map((ct) => {
+        return { key: ct.ContentType, text: ct.ContentType, disabled: !ct.Enabled };
+    });
     return (
         <div>
 
-            <TextField label="Content Type" value={item.contentType} onChange={(e, newValue) => {
+            <ComboBox label="Contengt Type" options={options}
+
+                text={item.contentType}
+                onRenderOption={(option): JSX.Element => {
+                    return (
+                        <div>
+                            <b>{option.key}</b>--{option.text}
+                        </div>
+                    );
+                }}
+                selectedKey={item.contentType}
+                dropdownWidth={800}
+                onChange={(e, newValue) => {
+                    setItem((temp) => ({ ...temp, contentType: newValue.text }));
+
+
+                }}
+                onResolveOptions={(e) => {
+                    return e;
+                }}
+            >
+            </ComboBox>
+            {/* <TextField label="Content Type" value={item.contentType} onChange={(e, newValue) => {
                 setItem((temp) => ({ ...temp, contentType: newValue }));
-            }}></TextField>
+            }}></TextField> */}
             <TextField label="Status" value={item.status} onChange={(e, newValue) => {
                 setItem((temp) => ({ ...temp, status: newValue }));
             }}></TextField>
@@ -46,7 +72,7 @@ export const SubscriptionForm: React.FunctionComponent<ISubscriptionFormProps> =
             <TextField label="Expiration" value={item["webhook.expiration"]} onChange={(e, newValue) => {
                 setItem((temp) => ({ ...temp, "webhook.expiration": newValue }));
             }}></TextField>
-            <TextField label="Status" value={item["webhook.status"]} onChange={(e, newValue) => {
+            <TextField label="WEBHOOK Status" value={item["webhook.status"]} onChange={(e, newValue) => {
                 setItem((temp) => ({ ...temp, "webhook.status": newValue }));
             }}></TextField>
             {errorMessage}

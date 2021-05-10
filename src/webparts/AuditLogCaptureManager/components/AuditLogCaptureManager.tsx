@@ -1,6 +1,6 @@
 import { Toolbar } from '@pnp/spfx-controls-react/lib/controls/toolbar';
 import * as React from 'react';
-import { QueryClient, QueryClientProvider, useQuery } from 'react-query';
+import { QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 
 import styles from './AuditLogCaptureManager.module.scss';
@@ -17,9 +17,11 @@ export const CutomPropertyContext: any = React.createContext<IAuditLogCaptureMan
 export default class AuditLogCaptureManager extends React.Component<IAuditLogCaptureManagerProps, IAuditLogCaptureManagerState> {
   public constructor(props: IAuditLogCaptureManagerProps) {
     super(props);
+
     this.state = {
       currentAction: "Captures", selectedDateFormat: "Local", aadHttpClient: this.props.aadHttpClient,
-      managementApiUrl: this.props.managementApiUrl, queryClient: this.props.queryClient, auditItemContentTypeId: this.props.auditItemContentTypeId
+      managementApiUrl: this.props.managementApiUrl, queryClient: this.props.queryClient, auditItemContentTypeId: this.props.auditItemContentTypeId,
+      webPartContext: this.props.webPartContext
     };
   }
   public render(): React.ReactElement<IAuditLogCaptureManagerProps> {

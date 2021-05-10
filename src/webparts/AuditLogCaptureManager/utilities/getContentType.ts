@@ -27,7 +27,7 @@ export function getContentType(parentContext: IAuditLogCaptureManagerProps, site
       debugger;
       if (ctLookupResults['odata.null']) {
         console.log(`ContentType not found`);
-        return Promise.reject(`ContentType not found`)
+        return Promise.reject(`ContentType not found`);
       }
       else {
         return ctLookupResults;

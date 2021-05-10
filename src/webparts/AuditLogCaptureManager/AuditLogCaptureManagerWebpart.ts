@@ -8,7 +8,7 @@ import * as strings from 'AuditLogCaptureManagerWebPartStrings';
 import { initializeIcons } from 'office-ui-fabric-react';
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
-import { QueryClient, QueryClientProvider, useQuery } from 'react-query';
+import { QueryClient } from 'react-query';
 
 import AuditLogCaptureManager from './components/AuditLogCaptureManager';
 import { IAuditLogCaptureManagerProps } from './components/IAuditLogCaptureManagerProps';
@@ -49,9 +49,7 @@ export default class AuditLogCaptureManagerWebPart extends BaseClientSideWebPart
   }
   public render(): void {
     debugger;
-    const d = sp.web.contentTypes.getById("0x01").get().then((x) => {
-      debugger;
-    });
+
     const queryClient = new QueryClient();
     const element: React.ReactElement<IAuditLogCaptureManagerProps> = React.createElement(
       AuditLogCaptureManager,
@@ -59,7 +57,8 @@ export default class AuditLogCaptureManagerWebPart extends BaseClientSideWebPart
         managementApiUrl: this.properties.managementApiUrl,
         aadHttpClient: this.aadHttpClient,
         queryClient: queryClient,
-        auditItemContentTypeId: this.properties.auditItemContentTypeId
+        auditItemContentTypeId: this.properties.auditItemContentTypeId,
+        webPartContext: this.context
       }
     );
 
