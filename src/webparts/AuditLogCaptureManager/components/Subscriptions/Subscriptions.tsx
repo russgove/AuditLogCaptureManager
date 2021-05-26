@@ -1,11 +1,12 @@
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { IViewField, ListView } from '@pnp/spfx-controls-react/lib/controls/listView';
 import { getIconClassName } from '@uifabric/styling';
+import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import * as React from 'react';
 import { useState } from 'react';
 import { useQuery } from 'react-query';
-import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
+
 import { Subscription } from '../../model/Model';
 import { callManagementApi } from '../../utilities/callManagementApi';
 import { CutomPropertyContext } from '../AuditLogCaptureManager';
@@ -13,7 +14,7 @@ import { SubscriptionForm } from './SubscriptionForm';
 
 export const ListItemsWebPartContext = React.createContext<WebPartContext>(null);
 export const Subscriptions: React.FunctionComponent = () => {
-  debugger;
+
   const parentContext: any = React.useContext<any>(CutomPropertyContext);
   const [mode, setMode] = useState<string>("display");
   const [selectedItem, setSelectedItem] = useState<Subscription>(null);
@@ -49,7 +50,7 @@ export const Subscriptions: React.FunctionComponent = () => {
         setMode("Edit");
         setSelectedItem(new Subscription());
 
-      }}>Add Site</PrimaryButton>
+      }}>Add Subscription</PrimaryButton>
       <Panel type={PanelType.smallFixedFar} headerText="Edit Subscription" isOpen={mode === "Edit"} onDismiss={(e) => {
         setMode("Display");
       }} >

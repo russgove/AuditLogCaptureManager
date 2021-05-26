@@ -5,8 +5,6 @@ export function renderDate(dateFormat: string): (item?: any, index?: number, col
 
     return (item?: any, index?: number, column?: IColumn) => {
 
-
-        console.log(`in col render selected date format ois ${dateFormat} local selected date format is  `);
         var date: Date = new Date(item[column.fieldName]);
         var displayDate = (dateFormat === "UTC") ? date.toUTCString() : date.toLocaleString();
 

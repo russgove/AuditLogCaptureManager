@@ -13,7 +13,7 @@ import "@pnp/sp/presets/all";
 import "@pnp/sp/sites";
 
 export function getContentType(parentContext: IAuditLogCaptureManagerProps, siteUrl: string): Promise<IContentTypeInfo> {
-  debugger;
+ 
   if (!siteUrl) {
     console.log(`site url passed to getContentType is empty`);
     return Promise.reject(`site url passed to getContentTypew is empty`);
@@ -22,9 +22,9 @@ export function getContentType(parentContext: IAuditLogCaptureManagerProps, site
     var url: string = decodeURIComponent(siteUrl);
     console.log(`site url passed to getContentType is ${url}`);
     var rootweb = Web(url);
-    debugger;
+
     const contentType = rootweb.contentTypes.getById(parentContext.auditItemContentTypeId)().then((ctLookupResults) => {
-      debugger;
+    
       if (ctLookupResults['odata.null']) {
         console.log(`ContentType not found`);
         return Promise.reject(`ContentType not found`);
@@ -33,9 +33,9 @@ export function getContentType(parentContext: IAuditLogCaptureManagerProps, site
         return ctLookupResults;
       }
     });
-    debugger;
+ 
     return contentType;
-    debugger;
+ 
 
   }
   catch (ee) {

@@ -20,7 +20,7 @@ export interface CallbackItemECBProps {
 }
 export const CallbackItemECB: React.FunctionComponent<CallbackItemECBProps> = (props) => {
   const replay = async (source: string, event) => {
-    debugger;
+
     const url = `${parentContext.managementApiUrl}/api/EnqueueCallbackItems`;
     await callManagementApi(parentContext.aadHttpClient, url, "POST", JSON.stringify([this]));//make it an array
     alert(`1 files where queued`);

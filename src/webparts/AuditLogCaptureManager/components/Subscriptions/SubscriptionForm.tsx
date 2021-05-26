@@ -80,7 +80,7 @@ export const SubscriptionForm: React.FunctionComponent<ISubscriptionFormProps> =
                 <PrimaryButton onClick={async (e) => {
 
                     try {
-                        debugger;
+                   
                         saveSubscription.mutateAsync(item)
                             .then(() => {
                                 setErrorMessage("");

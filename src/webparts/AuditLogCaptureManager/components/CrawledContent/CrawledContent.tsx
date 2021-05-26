@@ -19,15 +19,15 @@ import { IAuditLogCaptureManagerState } from '../IAuditLogCaptureManagerState';
 export const ListItemsWebPartContext = React.createContext<WebPartContext>(null);
 export const CrawledContent: React.FunctionComponent = () => {
 
-  debugger;
+
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const crawledCallbackItems = useQuery<CrawledCallbackItem[]>('crawledcallbackitems', () => {
     const url = `${parentContext.managementApiUrl}/api/ListCrawledContent/${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()}`;
     return callManagementApi(parentContext.aadHttpClient, url, "GET")
       .then((items) => {
-        debugger;
+      
         return items.map((item) => {
-          debugger;
+        
           var cbItem = item.callbackItem;
           return { ...item, callbackItem: eval('(' + cbItem + ')') };
         });

@@ -27,7 +27,7 @@ import { callManagementApi } from './callManagementApi';
 //   return newContentType.get_stringId();
 // }
 export async function createContentType(siteUrl: string, parentContext: IAuditLogCaptureManagerProps) {
-  debugger;
+
   const url = `${parentContext.managementApiUrl}/api/AddContentTypeToSite?siteUrl=${encodeURIComponent(siteUrl)}`;
   await callManagementApi(parentContext.aadHttpClient, url, "POST");
   alert(`ct created`);
@@ -71,7 +71,7 @@ function executeQuery(context: SP.ClientContext): Promise<any> {
     try {
       context.executeQueryAsync(
         (sender: any, args: SP.ClientRequestSucceededEventArgs) => {
-          debugger;
+   
           return resolve(args);
         },
         (sender: any, err: SP.ClientRequestFailedEventArgs) => {
@@ -83,7 +83,7 @@ function executeQuery(context: SP.ClientContext): Promise<any> {
       );
     }
     catch (err) {
-      debugger;
+    
       console.log(err);
       debugger;
 

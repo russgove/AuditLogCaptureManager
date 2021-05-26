@@ -4,7 +4,7 @@ import "@pnp/sp/presets/all";
 import "@pnp/sp/sites";
 
 export function getSite(siteUrl: string): Promise<any> {
-    debugger;
+
     if (!siteUrl) {
         console.log(`site url passed to getSite is empty`);
         return Promise.reject(`site url passed to getSite is empty`);

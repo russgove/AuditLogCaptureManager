@@ -7,7 +7,7 @@ export interface IDateFormatPickerProps {
     selectedDateFormat: string;
 }
 export const DateFormatPicker: React.FunctionComponent<IDateFormatPickerProps> = (props): JSX.Element => {
-    debugger;
+ 
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     const dateFormatChoices: Array<IChoiceGroupOption> = [
@@ -18,7 +18,7 @@ export const DateFormatPicker: React.FunctionComponent<IDateFormatPickerProps> =
         <ChoiceGroup label="Date Format" defaultSelectedKey={props.selectedDateFormat} options={dateFormatChoices}
             onChange={
                 (e, option) => {
-                    debugger;
+               
                     props.onFormatChange(option.key);
                     console.log(`date format is now ${option.key}`);
                 }}></ChoiceGroup>

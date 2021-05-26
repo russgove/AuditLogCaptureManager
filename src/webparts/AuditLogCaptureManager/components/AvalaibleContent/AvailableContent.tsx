@@ -25,7 +25,7 @@ export const AvailableContent: React.FunctionComponent = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [contentType, setContentType] = useState<string>("Audit.SharePoint");
   const callbackItems = useQuery<CallbackItem[]>('callbackitems', () => {
-    debugger;
+
     var now = new Date();
     const url = `${parentContext.managementApiUrl}/api/ListAvailableContent/${contentType}/${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()}T${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
     return callManagementApi(parentContext.aadHttpClient, url, "GET");
@@ -89,17 +89,17 @@ export const AvailableContent: React.FunctionComponent = () => {
       name: 'actions', minWidth: 50, maxWidth: 50, displayName: 'Actions', render: (item?: any, index?: number) => {
         return <div>
           <i className={getIconClassName('Redo')} onClick={async (e) => {
-
-            const url = `${parentContext.managementApiUrl}/api/EnqueueCallbackItems`;
+debugger;
+            const url = `${parentContext.managementApiUrl}/api/EnqueueAuditItems`;
             const selected = [item];
             await callManagementApi(parentContext.aadHttpClient, url, "POST", JSON.stringify(selected));
-            alert(`${selected.length} files where queued`);
+            alert(`${selected.length} items where queued`);
           }}></i>
           &nbsp;&nbsp;    &nbsp;&nbsp;    &nbsp;&nbsp;
           <i className={getIconClassName('View')} onClick={async (e) => {
-            setSelectedCallbackItem(item);
-            setMode("showselected");
-            auditItems.refetch();
+            // setSelectedCallbackItem(item);
+            // setMode("showselected");
+            // auditItems.refetch();
           }}></i>
         </div>;
       }
@@ -110,9 +110,9 @@ export const AvailableContent: React.FunctionComponent = () => {
     },
     { name: 'UserId', minWidth: 300, maxWidth: 300, displayName: 'UserId ', sorting: true, isResizable: true },
     { name: 'Operation', minWidth: 100, maxWidth: 100, displayName: 'Operation ', sorting: true, isResizable: true },
+    { name: 'ObjectId', minWidth: 400, maxWidth: 900, displayName: 'ObjectId ', sorting: true, isResizable: true },
     { name: 'ClientIP', minWidth: 100, maxWidth: 200, displayName: 'ClientIP ', sorting: true, isResizable: true },
     { name: 'ItemType', minWidth: 100, maxWidth: 100, displayName: 'ItemType ', sorting: true, isResizable: true },
-    { name: 'Operation', minWidth: 100, maxWidth: 100, displayName: 'Operation ', sorting: true, isResizable: true },
     { name: 'SiteUrl', minWidth: 200, maxWidth: 300, displayName: 'SiteUrl  ', sorting: true, isResizable: true },
     { name: 'SourceFileName', minWidth: 200, maxWidth: 300, displayName: 'SourceFileName  ', sorting: true, isResizable: true },
     { name: 'SourceRelativeUrl', minWidth: 200, maxWidth: 300, displayName: 'SourceRelativeUrl  ', sorting: true, isResizable: true },
@@ -127,7 +127,6 @@ export const AvailableContent: React.FunctionComponent = () => {
     { name: 'RecordType', minWidth: 100, maxWidth: 200, displayName: 'RecordType ', sorting: true, isResizable: true },
     { name: 'Version', minWidth: 100, maxWidth: 300, displayName: 'Version', sorting: true, isResizable: true },
     { name: 'Workload', minWidth: 100, maxWidth: 300, displayName: 'Workload ', sorting: true, isResizable: true },
-    { name: 'ObjectId', minWidth: 100, maxWidth: 300, displayName: 'ObjectId ', sorting: true, isResizable: true },
     { name: 'CorrelationId', minWidth: 100, maxWidth: 300, displayName: 'CorrelationId ', sorting: true, isResizable: true },
     { name: 'CustomUniqueId', minWidth: 100, maxWidth: 300, displayName: 'CustomUniqueId ', sorting: true, isResizable: true },
     { name: 'EventSource', minWidth: 100, maxWidth: 300, displayName: 'EventSource ', sorting: true, isResizable: true },
@@ -172,6 +171,7 @@ export const AvailableContent: React.FunctionComponent = () => {
         }}
       />
       <DatePicker value={selectedDate}
+       label="Date"
         onSelectDate={(date) => {
           setSelectedDate(date);
         }}></DatePicker>

@@ -1,9 +1,11 @@
 import { WebPartContext } from '@microsoft/sp-webpart-base';
+import { Utilities } from '@pnp/sp/sputilities';
 import { ListPicker } from "@pnp/spfx-controls-react/lib/ListPicker";
 import { SitePicker } from "@pnp/spfx-controls-react/lib/SitePicker";
 import { IconButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { ComboBox, IComboBoxOption } from 'office-ui-fabric-react/lib/ComboBox';
 import { Label } from 'office-ui-fabric-react/lib/Label';
+import { Link } from 'office-ui-fabric-react/lib/Link';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import { IToggleProps, Toggle } from 'office-ui-fabric-react/lib/Toggle';
 import * as React from 'react';
@@ -14,6 +16,7 @@ import { ISharePointAuditOperation, SharePointAuditOperations, SiteToCapture } f
 import { callManagementApi } from '../../utilities/callManagementApi';
 import { createCaptureList } from '../../utilities/createCaptureList';
 import { getContentType } from '../../utilities/getContentType';
+import { getListDefaultView } from '../../utilities/getListDefaultView';
 import { getLists } from '../../utilities/getLists';
 import { getSite } from '../../utilities/getSite';
 import { CutomPropertyContext } from '../AuditLogCaptureManager';
@@ -58,17 +61,18 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
         :
         [];
     // to do, swithc to capture to site 
-    const contentTypeLookup = useQuery<any>(['contentTypeLookup', item.siteUrl], (x) => {
-        debugger;
+    const contentTypeLookup = useQuery<any>(['contentTypeLookup', item.captureToSiteUrl], (x) => {
+   
         setErrorMessage("");
         if (item.siteUrl) {
-            return getContentType(parentContext, item.siteUrl);
+            return getContentType(parentContext, item.captureToSiteUrl);
         } else {
             return Promise.resolve();
         }
     }, {
         refetchOnWindowFocus: false,
         enabled: true, // turned off by default, manual refetch is needed
+        retry:false,
         onSuccess: (response) => {
 
             // setItem((temp) => ({
@@ -87,7 +91,7 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
         return callManagementApi(parentContext.aadHttpClient, url, "POST", JSON.stringify(siteToCapture));
     }, {
         onSuccess: () => {
-            debugger;
+     
             contentTypeLookup.refetch();
             //parentContext.queryClient.invalidateQueries('contentTypeLookup');
         }
@@ -95,7 +99,7 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
     const listLookup = useQuery<any>(['listLookup', item.siteUrl], (x) => {
         setErrorMessage("");
         if (item.siteUrl) {
-            debugger;
+         
             return getLists(item.siteUrl);
         } else {
             return Promise.resolve;
@@ -107,15 +111,20 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
     const [newListName, setnewListName] = useState<string>("");
 
     const [errorMessage, setErrorMessage] = useState<string>("");
-
+console.log(item);
     return (
         <div>
+                   <TextField label="Capture Id" value={item.id} readOnly={true} borderless={true}
+            // onChange={(e, newValue) => {
+            //     setItem((temp) => ({ ...temp, captureToSiteId: newValue }));
+            // }}
+            ></TextField>
             <Toggle label="Capture from all sites or a single site"
                 onText="All Sites"
                 offText="A Single Site"
                 checked={item.siteId === "*"}
                 onChange={(e, val) => {
-                    debugger;
+                 
                     if (val) {
                         setItem((temp) => ({ ...temp, siteUrl: "*", siteId: "*", siteTitle: "*" }));
                     }
@@ -126,7 +135,7 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
                 <SitePicker
 
                     disabled={item.siteId === "*"}
-                    initialSites={[{ id: item.siteId, url: decodeURIComponent(item.siteUrl), title: "sd" }]}
+                    selectedSites={[{ id: item.siteId, url: decodeURIComponent(item.siteUrl), title: item.siteTitle }]}
                     context={parentContext.webPartContext}
                     label={'Select site to capture'}
                     mode={'site'}
@@ -134,22 +143,23 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
                     multiSelect={false}
 
                     onChange={(sites) => {
-                        setItem((temp) => ({ ...temp, siteUrl: sites[0].url, siteId: sites[0].id, siteTitle: sites[0].title }));
-                        console.log(sites);
+                        debugger;
+                        console.log('setting Item');
+                        if (item.captureToSiteId===item.siteId){
+                              setItem((temp) => ({ ...temp, siteUrl: sites[0].url,captureToSiteUrl:sites[0].url ,siteId: sites[0].id,captureToSiteId: sites[0].id, siteTitle: sites[0].title,captureToSiteTitle: sites[0].title }));
+                        }else{
+                            setItem((temp) => ({ ...temp, siteUrl: sites[0].url, siteId: sites[0].id, siteTitle: sites[0].title }));
+                        }
+                        console.log(item);
                     }}
                     placeholder={'Select sites'}
                     searchPlaceholder={'Filter sites'} />
 
             }
-            <TextField label="Site Id" value={item.siteId} readOnly={true} borderless={true}
-                onChange={(e, newValue) => {
-                    setItem((temp) => ({ ...temp, siteId: newValue }));
-                }}
-            ></TextField>
-
-
+            <TextField label="Site Id" value={item.siteId} readOnly={true} borderless={true} />
+              
             <ComboBox label="Events To Capture" options={options} multiSelect
-                disabled={contentTypeLookup.isError}
+                disabled={!item.siteId}
                 text={item.eventsToCapture}
                 onRenderOption={(option): JSX.Element => {
                     return (
@@ -182,7 +192,7 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
             {selectedOptions}
 
             <SitePicker
-                initialSites={[{ id: item.siteId, url: decodeURIComponent(item.siteUrl), title: "sd" }]}
+                selectedSites={[{ id: item.captureToSiteId, url: decodeURIComponent(item.captureToSiteUrl), title:item.captureToSiteTitle }]}
                 context={parentContext.webPartContext}
                 label={'Select site to save captured Audit Items to'}
                 mode={'site'}
@@ -190,21 +200,19 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
                 multiSelect={false}
 
                 onChange={(sites) => {
+                 debugger;
                     setItem((temp) => ({ ...temp, captureToSiteId: sites[0].id, captureToSiteUrl: sites[0].url, captureToSiteTitle: sites[0].title }));
-                    console.log(sites);
+                    console.log(item);
                 }}
-                placeholder={'Select sites'}
+                placeholder={'Select site'}
                 searchPlaceholder={'Filter sites'} />
-            <TextField label="Capture To Site Id" value={item.captureToSiteId} readOnly={true} borderless={true}
-            // onChange={(e, newValue) => {
-            //     setItem((temp) => ({ ...temp, captureToSiteId: newValue }));
-            // }}
-            ></TextField>
+<Link  disabled={!item.siteUrl} title="hit th site" href={item.siteUrl}>Go to site</Link>
+            <TextField label="Capture To Site Id" value={item.captureToSiteId} readOnly={true} borderless={true}    ></TextField>
             <div style={{ display: contentTypeLookup.isError ? 'block' : 'none' }}>
                 <span style={{ color: "Red" }} >  The Audit Item content type ({parentContext.auditItemContentTypeId}) does not exist on this site.</span>
                 <PrimaryButton
                     onClick={async (e) => {
-                        debugger;
+                   
                         try {
                             addContentTypeToSite.mutateAsync(item)
                                 .catch((err) => {
@@ -223,35 +231,38 @@ export const CaptureForm: React.FunctionComponent<ICaptureFormProps> = (props) =
                 <span style={{ color: "Green" }} >  The Audit Item content type ({parentContext.auditItemContentTypeId}) is being created on this site.</span>
             </div>
 
-            <TextField label="Capture To List Id" value={item.captureToListId} readOnly={true} borderless={true}
-            // onChange={(e, newValue) => {
-            //     setItem((temp) => ({ ...temp, captureToListId: newValue }));
-            // }}
-            ></TextField>
+            <TextField label="Capture To List Id" value={item.captureToListId} readOnly={true} borderless={true}             />
 
             <TextField label="Capture To List" value={""} readOnly={true} borderless={true}></TextField>
-            <ListPicker baseTemplate={100} includeHidden={true} webAbsoluteUrl={item.captureToSiteUrl}
-                context={parentContext.webPartContext} label="Capture To List"
+            <ListPicker baseTemplate={100} includeHidden={true}
+             webAbsoluteUrl={item.captureToSiteUrl}
+                context={parentContext.webPartContext} label="Select list to save captured Audit Items to"
                 contentTypeId={parentContext.auditItemContentTypeId} selectedList={item.captureToListId}
                 refreshToggle={refreshLists}
-                onSelectionChanged={(lists: string | string[]) => {
-                    if (typeof lists === "string") {
-                        setItem((temp) => ({ ...temp, captureToListId: lists }));
+                onSelectionChanged={(list: string ) => {
+                    if (typeof list === "string") {
+                        setItem((temp) => ({ ...temp, captureToListId: list }));
                     }
 
                 }
                 }></ListPicker>
+                <Link   disabled={!item.captureToListId} onClick={async (e)=>{
+                    debugger;
+                    var ve =await getListDefaultView(item.captureToSiteUrl,item.captureToListId);
+                  
+                   debugger;
+                }} >Go to List</Link>
             <TextField label="New Capture To List" value={newListName} onChange={(e, newValue) => {
                 setnewListName(newValue);
             }}></TextField>
 
             <IconButton iconProps={{ iconName: "NewFolder" }} text="Create" label="DDDD" onClick={(async (e) => {
-                debugger;
-                var listId = await createCaptureList(parentContext, item.siteUrl, newListName, parentContext.managementApiUrl);
+           
+                var listId = await createCaptureList(parentContext, item.captureToSiteUrl, newListName, parentContext.managementApiUrl);
                 console.log(listId);
                 setRefreshLists(!refreshLists);//force reload
                 setItem((temp) => ({ ...temp, captureToListId: listId }));
-                debugger;
+             
             })}>Create</IconButton>
             <Label style={{ color: "red" }}>
                 {errorMessage}

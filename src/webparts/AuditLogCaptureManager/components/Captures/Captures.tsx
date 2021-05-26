@@ -21,8 +21,9 @@ export const Captures: React.FunctionComponent = () => {
         return callManagementApi(parentContext.aadHttpClient, url, "GET");
     });
     const deleteSiteToCapture = useMutation((siteToCapture: SiteToCapture) => {
-        const url = `${parentContext.managementApiUrl}/api/DeleteSiteToCapture?siteId=${siteToCapture.siteId}`;
-        return callManagementApi(parentContext.aadHttpClient, url, "Get");
+        const url = `${parentContext.managementApiUrl}/api/DeleteSiteToCapture`;
+       // return callManagementApi(parentContext.aadHttpClient, url, "Get");
+        return callManagementApi(parentContext.aadHttpClient, url, "POST", JSON.stringify(siteToCapture));
     }, {
         onSuccess: () => {
             parentContext.queryClient.invalidateQueries('sitestocapture');
@@ -42,7 +43,7 @@ export const Captures: React.FunctionComponent = () => {
               &nbsp;&nbsp;    &nbsp;&nbsp;    &nbsp;&nbsp;
 
                     <i className={getIconClassName('Delete')} onClick={async (e) => {
-                        if (confirm("Are You Sure you wanna?")) {
+                        if (confirm("Are You Sure you want to delete this Capture Point?")) {
                             deleteSiteToCapture.mutateAsync(item)
                                 .catch((err) => {
                                     alert(err);
@@ -58,6 +59,8 @@ export const Captures: React.FunctionComponent = () => {
                 return decodeURIComponent(item.siteUrl);
             }
         },
+        { name: 'id', minWidth: 200, maxWidth: 800, displayName: 'id', sorting: true, isResizable: true },
+ 
         { name: 'eventsToCapture', minWidth: 200, maxWidth: 800, displayName: 'Events to Capture', sorting: true, isResizable: true },
 
         { name: 'siteId', minWidth: 50, maxWidth: 250, displayName: 'Site Id', sorting: true, isResizable: true },
@@ -66,13 +69,13 @@ export const Captures: React.FunctionComponent = () => {
     ];
     return (
         <div>
-            Events being Captured
+           Capture Points
             <br />
             <PrimaryButton onClick={async (e) => {
                 setMode("Edit");
                 setSelectedItem(new SiteToCapture());
 
-            }}>Add Site</PrimaryButton>
+            }}>Add Capture Point</PrimaryButton>
             <ListView items={sitesToCapture.data} viewFields={viewFields}></ListView>
 
             <Panel type={PanelType.largeFixed} headerText="Configure Site to Capture" isOpen={mode === "Edit"} onDismiss={(e) => {
@@ -90,7 +93,7 @@ export const Captures: React.FunctionComponent = () => {
                 setMode("Edit");
                 setSelectedItem(new SiteToCapture());
 
-            }}>Add Site</PrimaryButton>
+            }}>Add Capture Point</PrimaryButton>
 
         </div>
 

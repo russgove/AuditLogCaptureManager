@@ -58,7 +58,7 @@ export default class AuditLogCaptureManager extends React.Component<IAuditLogCap
               actionGroups={{
                 'group1': {
                   'Captures': {
-                    title: '  Captures',
+                    title: '  Capture Points',
                     iconName: 'Edit',
                     onClick: () => {
                       this.setState((current) => ({ ...current, currentAction: "Captures" }));

@@ -48,7 +48,7 @@ export default class AuditLogCaptureManagerWebPart extends BaseClientSideWebPart
     });
   }
   public render(): void {
-    debugger;
+
 
     const queryClient = new QueryClient();
     const element: React.ReactElement<IAuditLogCaptureManagerProps> = React.createElement(
