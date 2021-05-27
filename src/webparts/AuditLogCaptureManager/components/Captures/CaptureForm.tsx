@@ -1,4 +1,5 @@
 import { WebPartContext } from '@microsoft/sp-webpart-base';
+import { IList, IViewInfo } from "@pnp/sp/presets/all";
 import { Utilities } from '@pnp/sp/sputilities';
 import { ListPicker } from "@pnp/spfx-controls-react/lib/ListPicker";
 import { SitePicker } from "@pnp/spfx-controls-react/lib/SitePicker";
@@ -248,9 +249,10 @@ console.log(item);
                 }></ListPicker>
                 <Link   disabled={!item.captureToListId} onClick={async (e)=>{
                     debugger;
-                    var ve =await getListDefaultView(item.captureToSiteUrl,item.captureToListId);
-                  
-                   debugger;
+                    var view:IViewInfo =await getListDefaultView(item.captureToSiteUrl,item.captureToListId);
+                  const url= `https://${window.location.host}//${view.ServerRelativeUrl}` ;
+                  debugger;
+                   window.location.href=url;
                 }} >Go to List</Link>
             <TextField label="New Capture To List" value={newListName} onChange={(e, newValue) => {
                 setnewListName(newValue);
