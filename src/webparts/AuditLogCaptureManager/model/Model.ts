@@ -254,5 +254,9 @@ export var SharePointAuditOperations: Array<ISharePointAuditOperation> = [
     { Operation: "UpdateSSOApplication", Description: "Target application updated in Secure store service." },
     { Operation: "UserAddedToGroup", Description: "Site administrator or owner adds a person to a group on a SharePoint or OneDrive for Business site. Adding a person to a group grants the user the permissions that were assigned to the group." },
     { Operation: "UserRemovedFromGroup", Description: "Site administrator or owner removes a person from a group on a SharePoint or OneDrive for Business site. After the person is removed, they no longer are granted the permissions that were assigned to the group." },
-    { Operation: "WorkflowModified", Description: "User creates, modifies, or deletes an Enterprise Project Type or Workflow phases or stages in Project Web App." }
+    { Operation: "WorkflowModified", Description: "User creates, modifies, or deletes an Enterprise Project Type or Workflow phases or stages in Project Web App." },
+    
+    // seems all the list stuff is missonh
+    { Operation: "ListViewed", Description: "A user views a list" }
+    
 ];
